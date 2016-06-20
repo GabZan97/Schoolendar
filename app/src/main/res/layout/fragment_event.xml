@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:clipChildren="false"
+    android:clipToPadding="false" >
+
+    <!-- Event Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+
+        android:layout_marginTop="@dimen/event_content_top_margin"
+        android:layout_marginBottom="@dimen/event_content_bottom_margin"
+        android:layout_marginEnd="@dimen/event_content_horizontal_margin"
+        android:layout_marginStart="@dimen/event_content_horizontal_margin" >
+
+        <!-- Title Row -->
+        <TextView
+            android:id="@+id/event_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:theme="@style/TitleText" />
+
+        <!-- Type plus Subject of Event Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/event_type_subject"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:theme="@style/NormalText"
+                />
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <!-- Date Selection Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/event_content_spacing" >
+
+            <!-- Date Picker -->
+            <ImageView
+                android:id="@+id/date_image"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+
+                android:adjustViewBounds="true"
+                android:background="@drawable/blue_button"
+                android:padding="9dp"
+
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_event_white_24dp" />
+
+            <!-- Selected Date Text -->
+            <TextView
+                android:id="@+id/event_date"
+
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+
+                android:clickable="true"
+                android:gravity="center"
+
+                android:text="@string/prompt_date_picker"
+                android:textAlignment="center"
+                android:textColor="@color/selection_blue"
+                android:textSize="@dimen/normal_text_size" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!-- Notification Set Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/event_content_spacing"
+            android:layout_marginBottom="@dimen/event_content_spacing">
+
+            <!-- Time Picker -->
+            <ImageView
+                android:id="@+id/notification_image"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+
+                android:adjustViewBounds="true"
+                android:background="@drawable/blue_button"
+                android:padding="8dp"
+
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_alarm_white_24dp" />
+
+            <!-- Selected Date Text -->
+            <TextView
+                android:id="@+id/event_notification"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+                android:clickable="true"
+                android:gravity="center"
+
+                android:text="@string/prompt_notification_picker"
+                android:textAlignment="center"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/normal_text_size" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <!-- Description Row -->
+        <TextView
+            android:id="@+id/event_description"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+
+            android:gravity="top"
+            android:theme="@style/NormalText"
+            android:layout_marginTop="@dimen/event_content_spacing"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_mode_edit_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

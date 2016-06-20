@@ -1,0 +1,123 @@
+<resources>
+    <!-- Activities Titles -->
+    <string name="app_name">Schoolendar</string>
+    <string name="fragment_title_sign_in">Sign in</string>
+    <string name="fragment_title_month_view">Month View</string>
+    <string name="fragment_title_add_event">New Event</string>
+    <string name="fragment_title_manage_subjects">Subjects</string>
+    <string name="fragment_title_all_events">Events</string>
+    <string name="fragment_title_account">Account</string>
+    <string name="activity_title_single_event">Event</string>
+
+    <!-- Menu Drawer Items -->
+    <string name="menu_drawer_months_view">Month View</string>
+    <string name="menu_drawer_add_event">Add New Event</string>
+    <string name="menu_drawer_all_events">All Events</string>
+    <string name="menu_drawer_manage_subjects">Manage Subjects</string>
+    <string name="menu_drawer_account">Account</string>
+
+    <!-- Prompt Texts -->
+    <string name="prompt_title">Event Title</string>
+    <string name="prompt_description">Write a description… (optional)</string>
+    <string name="prompt_new_subject">New Subject…</string>
+    <string name="prompt_date_picker">Select a date</string>
+    <string name="prompt_notification_picker">Set a notification</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="dialog_edit_subject">Edit subject name</string>
+
+    <!-- Buttons Texts -->
+    <string name="action_add">Add</string>
+    <string name="action_set">Set</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_login">Login</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="action_log_out">Logout</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Messages -->
+    <string name="toast_login_successful">You have been logged in</string>
+    <string name="toast_authentication_failed">Authentication failed</string>
+    <string name="toast_event_add_succeeded">New event added</string>
+    <string name="toast_event_add_failed">Oops! Something went wrong</string>
+    <string name="error_event_not_found">Event not found!</string>
+    <string name="error_missing_title">Please insert a Title</string>
+    <string name="error_missing_subject">Please select a Subject</string>
+    <string name="error_missing_date">Please select a Date</string>
+    <string name="error_insert_subject_name">Please insert a name</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_wrong_password">This password is incorrect</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="message_welcome_user">Welcome, %1$s</string>
+    <string name="message_user_not_signed_in">Login to Sync State</string>
+    <string name="message_or">OR</string>
+    <string name="message_logout_confirm">Are you sure?</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
+
+    <!-- Notifications stuff -->
+    <string name="EXTRA_LONG_EVENT_ID">com.gabrielezanelli.schoolendar.extra_long_event_id</string>
+    <string name="EXTRA_LONG_DAY_SELECTED">com.gabrielezanelli.schoolendar.extra_long_day_selected</string>
+    <string name="event_notification_default_text">Click here to see more information</string>
+
+    <!-- Date Formats -->
+    <string name="short_date_format">dd-MM-yy</string>
+    <string name="long_date_format">EEEE, d MMMM yyyy</string>
+    <string name="event_date_format">EEEE d MMMM</string>
+    <string name="full_date_format">"EEE, d MMMM yyyy - HH:mm"</string>
+
+    <!-- Keys -->
+    <string name="facebook_app_id">1623396997978618</string>
+    <string name="fb_login_protocol_scheme">fb1623396997978618</string>
+    <string name="default_web_id">60297251902-1he7fe6tr28kc6hh5t83gv3qh8uelkk5.apps.googleusercontent.com</string>
+
+    <!-- Preferences -->
+    <string name="empty">Empty</string>
+    <string name="category_user_profile">Profile</string>
+    <string name="pref_key_username">default_shared_preferences_key_username</string>
+    <string name="pref_username">Username</string>
+    <string name="pref_default_username">Schoolendar user</string>
+    <string name="pref_key_email">default_shared_preferences_key_email</string>
+    <string name="pref_email">Email</string>
+    <string name="pref_key_image">default_shared_preferences_key_image</string>
+    <string name="pref_image">Image</string>
+    <string name="pref_summary_image_unset">User image not set</string>
+    <string name="pref_summary_image_set">User image is set</string>
+    <string name="pref_key_spaggiari_account">default_shared_preferences_key_account_spaggiari</string>
+    <string name="pref_spaggiari_account">Account Spaggiari</string>
+    <string name="pref_summary_spaggiari_account_unset">Not linked</string>
+    <string name="category_settings">Settings</string>
+    <string name="pref_key_logout">default_shared_preferences_key_logout</string>
+    <string name="pref_logout">Logout</string>
+    <string name="category_notifications">Notifications</string>
+    <string name="pref_key_enable_default_notifications">default_shared_preferences_key_enable_default_notifications</string>
+    <string name="pref_enable_default_notifications">Enable default notifications</string>
+    <string name="pref_key_notification_day">default_shared_preferences_key_notification_day</string>
+    <string name="pref_notification_day">Default day</string>
+    <string name="pref_key_notification_time">default_shared_preferences_key_notification_time</string>
+    <string name="pref_notification_time">Default time</string>
+    <string name="pref_default_notification_time">54000000</string>
+
+    <!-- Arrays -->
+    <string-array name="event_types">
+        <item>Homework</item>
+        <item>Test</item>
+        <item>Project</item>
+        <item>Communication</item>
+        <item>Note</item>
+    </string-array>
+
+    <string-array name="notification_days">
+        <item name="1">One day before</item>
+        <item name="2">Two days before</item>
+        <item name="3">Three days before</item>
+    </string-array>
+    <string-array name="notification_days_values">
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+    </string-array>
+
+</resources>

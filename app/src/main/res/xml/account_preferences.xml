@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/category_user_profile" >
+        <EditTextPreference
+            android:key="@string/pref_key_username"
+            android:title="@string/pref_username"
+            android:defaultValue="@string/pref_default_username"
+            android:summary="@string/pref_default_username"
+            />
+        <Preference
+            android:key="@string/pref_key_email"
+            android:title="@string/pref_email"
+            android:summary="@string/empty"
+            />
+        <Preference
+            android:key="@string/pref_key_image"
+            android:title="@string/pref_image"
+            android:summary="@string/pref_summary_image_unset">
+        </Preference>
+        <com.gabrielezanelli.schoolendar.SpaggiariPreference
+            android:key="@string/pref_key_spaggiari_account"
+            android:title="@string/pref_spaggiari_account"
+            android:summary="@string/pref_summary_spaggiari_account_unset">
+        </com.gabrielezanelli.schoolendar.SpaggiariPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_notifications">
+        <CheckBoxPreference
+            android:key="@string/pref_key_enable_default_notifications"
+            android:title="@string/pref_enable_default_notifications"
+            android:defaultValue="false"
+             >
+        </CheckBoxPreference>
+        <ListPreference
+            android:key="@string/pref_key_notification_day"
+            android:title="@string/pref_notification_day"
+            android:entries="@array/notification_days"
+            android:summary="%s"
+            android:entryValues="@array/notification_days_values"
+            android:defaultValue="1"
+            android:enabled="false"
+            />
+        <com.gabrielezanelli.schoolendar.TimePreference
+            android:key="@string/pref_key_notification_time"
+            android:title="@string/pref_notification_time"
+            android:defaultValue="@string/pref_default_notification_time"
+            android:enabled="false"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_settings" >
+        <Preference
+            android:key="@string/pref_key_logout"
+            android:title="@string/pref_logout"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

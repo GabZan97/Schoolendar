@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single" >
+        <item
+            android:id="@+id/navMonthView"
+            android:icon="@drawable/ic_event_white_24dp"
+            android:title="@string/menu_drawer_months_view" />
+
+        <item
+            android:id="@+id/navAllEvents"
+            android:icon="@drawable/ic_view_list_white_24dp"
+            android:title="@string/menu_drawer_all_events" />
+
+        <item
+            android:id="@+id/navAddEvent"
+            android:icon="@drawable/ic_add_white_24dp"
+            android:title="@string/menu_drawer_add_event" />
+
+        <item
+            android:id="@+id/navManageSubjects"
+            android:icon="@drawable/ic_mode_edit_white_24dp"
+            android:title="@string/menu_drawer_manage_subjects" />
+
+        <!-- TODO: Fix settings never gets selected because doesn't belong to group -->
+        <item android:title="@string/action_settings">
+            <menu>
+                <item
+                    android:id="@+id/navAccount"
+                    android:icon="@drawable/ic_account_circle_white_24dp"
+                    android:title="@string/menu_drawer_account" />
+            </menu>
+        </item>
+    </group>
+
+</menu>

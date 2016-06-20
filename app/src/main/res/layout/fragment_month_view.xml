@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Month View Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+
+        android:layout_marginTop="@dimen/activity_margin_customized_action_bar"
+        android:layout_marginBottom="@dimen/activity_margin"
+
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin">
+
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            android:id="@+id/calendarView"
+            app:mcv_selectionColor="@color/selection_blue"
+            app:mcv_showOtherDates="all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Floating Action Button at the bottom end of the activity -->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        app:elevation="@dimen/fab_elevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/activity_margin"
+        android:src="@drawable/ic_add_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>
+
