@@ -5,44 +5,40 @@
     android:padding="@dimen/activity_margin">
 
     <TextView
-        android:id="@+id/a"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/event_content_spacing"
-        android:text="a"
+        android:text="@string/hint_school_code"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/b"
+        android:id="@+id/school_code_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/event_content_spacing" />
 
     <TextView
-        android:id="@+id/c"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/event_content_spacing"
-        android:text="c"
+        android:text="@string/hint_user_code"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/d"
+        android:id="@+id/user_code_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing"
-        android:inputType="textPassword" />
+        android:layout_marginBottom="@dimen/event_content_spacing" />
 
     <TextView
-        android:id="@+id/e"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/event_content_spacing"
-        android:text="e"
+        android:text="@string/hint_password"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/f"
+        android:id="@+id/password_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword" />

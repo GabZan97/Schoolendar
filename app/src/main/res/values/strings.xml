@@ -7,7 +7,8 @@
     <string name="fragment_title_manage_subjects">Subjects</string>
     <string name="fragment_title_all_events">Events</string>
     <string name="fragment_title_account">Account</string>
-    <string name="activity_title_single_event">Event</string>
+    <string name="fragment_title_event">Event</string>
+    <string name="fragment_title_event_not_found">Event not found</string>
 
     <!-- Menu Drawer Items -->
     <string name="menu_drawer_months_view">Month View</string>
@@ -16,15 +17,17 @@
     <string name="menu_drawer_manage_subjects">Manage Subjects</string>
     <string name="menu_drawer_account">Account</string>
 
-    <!-- Prompt Texts -->
-    <string name="prompt_title">Event Title</string>
-    <string name="prompt_description">Write a description… (optional)</string>
-    <string name="prompt_new_subject">New Subject…</string>
-    <string name="prompt_date_picker">Select a date</string>
-    <string name="prompt_notification_picker">Set a notification</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="dialog_edit_subject">Edit subject name</string>
+    <!-- Hint Texts -->
+    <string name="hint_title">Event Title</string>
+    <string name="hint_description">Write a description… (optional)</string>
+    <string name="hint_new_subject">New Subject…</string>
+    <string name="hint_date_picker">Select a date</string>
+    <string name="hint_notification_picker">Set a notification</string>
+    <string name="hint_search">Search...</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_school_code">School Code</string>
+    <string name="hint_user_code">User Code</string>
 
     <!-- Buttons Texts -->
     <string name="action_add">Add</string>
@@ -35,6 +38,8 @@
     <string name="action_register">Register</string>
     <string name="action_log_out">Logout</string>
     <string name="action_settings">Settings</string>
+    <string name="action_show_old_events">Show old events</string>
+    <string name="action_dont_show_old_events">Do not show old events</string>
 
     <!-- Messages -->
     <string name="toast_login_successful">You have been logged in</string>
@@ -55,6 +60,8 @@
     <string name="message_user_not_signed_in">Login to Sync State</string>
     <string name="message_or">OR</string>
     <string name="message_logout_confirm">Are you sure?</string>
+    <string name="message_any_notification_set">Any notification set</string>
+    <string name="message_edit_subject">Edit subject name</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
 
     <!-- Notifications stuff -->
@@ -63,10 +70,11 @@
     <string name="event_notification_default_text">Click here to see more information</string>
 
     <!-- Date Formats -->
-    <string name="short_date_format">dd-MM-yy</string>
+    <string name="short_date_format">dd/MM/yy</string>
     <string name="long_date_format">EEEE, d MMMM yyyy</string>
     <string name="event_date_format">EEEE d MMMM</string>
-    <string name="full_date_format">"EEE, d MMMM yyyy - HH:mm"</string>
+    <string name="event_date_search_format">d MMMM</string>
+    <string name="full_date_time_format">"EEE, d MMMM yyyy - HH:mm"</string>
 
     <!-- Keys -->
     <string name="facebook_app_id">1623396997978618</string>

@@ -25,7 +25,6 @@ public class AuthStateService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("Service","Service Created");
         firebaseAuth = FirebaseAuth.getInstance();
         initAuthenticationStateListener();
 
@@ -35,14 +34,14 @@ public class AuthStateService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         firebaseAuth.addAuthStateListener(authStateListener);
-        Log.d("Service","Service Started");
+        Log.d("Authentication Service","Created and Started");
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         firebaseAuth.removeAuthStateListener(authStateListener);
-        Log.d("Service","Service Detroyed");
+        Log.d("Authentication Service","Detroyed");
         super.onDestroy();
     }
 
@@ -76,6 +75,7 @@ public class AuthStateService extends Service {
                             }
                         }
                     });
+
 
                 }
             }

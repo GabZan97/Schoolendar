@@ -54,7 +54,6 @@
             android:layout_weight="1"
 
             android:src="@drawable/ic_mode_edit_white_24dp"
-            app:backgroundTint="@color/blue"
             app:borderWidth="0dp"
             app:elevation="0dp"
             app:fabSize="mini" />
@@ -72,7 +71,7 @@
         android:layout_marginStart="@dimen/activity_margin"
 
         android:layout_weight="1"
-        android:hint="@string/prompt_title"
+        android:hint="@string/hint_title"
         android:maxLines="1"
         android:theme="@style/NormalText" />
 
@@ -88,7 +87,7 @@
 
 
         android:gravity="top"
-        android:hint="@string/prompt_description"
+        android:hint="@string/hint_description"
         android:theme="@style/NormalText" />
 
     <!-- Date Selection Row-->
@@ -115,7 +114,7 @@
 
 
             android:adjustViewBounds="true"
-            android:background="@drawable/blue_button"
+            android:background="@drawable/blue_image_container"
             android:padding="9dp"
 
             android:scaleType="fitCenter"
@@ -132,7 +131,7 @@
             android:clickable="true"
             android:gravity="center"
 
-            android:text="@string/prompt_date_picker"
+            android:text="@string/hint_date_picker"
             android:textAlignment="center"
             android:theme="@style/SpecialText"/>
 
@@ -164,7 +163,7 @@
             android:layout_weight="1"
 
             android:adjustViewBounds="true"
-            android:background="@drawable/blue_button"
+            android:background="@drawable/blue_image_container"
             android:padding="8dp"
 
             android:scaleType="fitCenter"
@@ -179,7 +178,7 @@
             android:clickable="true"
             android:gravity="center"
 
-            android:text="@string/prompt_notification_picker"
+            android:text="@string/hint_notification_picker"
             android:textAlignment="center"
            android:theme="@style/SpecialText" />
 

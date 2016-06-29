@@ -57,10 +57,12 @@
 
         <!-- Service for checking the user authentication state -->
         <service android:name=".services.AuthStateService" />
+
         <service
             android:name=".services.SpaggiariManagerService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
+
     </application>
 
 </manifest>

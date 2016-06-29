@@ -3,6 +3,8 @@ package com.gabrielezanelli.schoolendar.fragments;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -21,11 +23,10 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.gabrielezanelli.schoolendar.FirebaseUser;
 import com.gabrielezanelli.schoolendar.R;
-import com.google.firebase.database.DatabaseReference;
 
-public class FragmentManageSubjects extends Fragment implements View.OnClickListener {
+public class ManageSubjectsFragment extends Fragment implements View.OnClickListener {
 
-    private FirebaseRecyclerAdapter<String, SubjectViewHolder> subjectAdapter;
+    private FirebaseRecyclerAdapter<String, SubjectHolder> subjectAdapter;
     private EditText newSubjectEdit;
     private RecyclerView recyclerView;
     private FloatingActionButton addButton;
@@ -39,7 +40,7 @@ public class FragmentManageSubjects extends Fragment implements View.OnClickList
 
         recyclerView = (RecyclerView) thisFragment.findViewById(R.id.subject_recycler_view);
         newSubjectEdit = (EditText) thisFragment.findViewById(R.id.new_subject_text);
-        addButton = (FloatingActionButton) thisFragment.findViewById(R.id.fab);
+        addButton = (FloatingActionButton) thisFragment.findViewById(R.id.add_event_fab);
         addButton.setOnClickListener(this);
 
         initSubjectsList();
@@ -53,7 +54,7 @@ public class FragmentManageSubjects extends Fragment implements View.OnClickList
         switch(v.getId()){
 
             // Add a new subject on Fab click
-            case(R.id.fab):
+            case(R.id.add_event_fab):
                 String newSubject = newSubjectEdit.getText().toString();
 
                 // If the subject field is empty sets an error
@@ -61,7 +62,7 @@ public class FragmentManageSubjects extends Fragment implements View.OnClickList
                     newSubjectEdit.setError(getResources().getString((R.string.error_insert_subject_name)));
                 else {
                     // Saves the subject in Firebase Database
-                    FirebaseUser.saveSubject(newSubject);
+                    FirebaseUser.addSubject(newSubject);
 
                     // Reset the input field
                     newSubjectEdit.setText("");
@@ -81,45 +82,48 @@ public class FragmentManageSubjects extends Fragment implements View.OnClickList
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
-        subjectAdapter = new FirebaseRecyclerAdapter<String, SubjectViewHolder>
-                (String.class, R.layout.card_subject, SubjectViewHolder.class, FirebaseUser.getSubjectsRef()) {
+        subjectAdapter = new FirebaseRecyclerAdapter<String, SubjectHolder>
+                (String.class, R.layout.card_subject, SubjectHolder.class, FirebaseUser.getSubjectsRef()) {
             @Override
-            protected void populateViewHolder(SubjectViewHolder viewHolder, String subject, int position) {
-                viewHolder.subjectView.setText(subject);
+            protected void populateViewHolder(SubjectHolder viewHolder, String subject, int position) {
+                viewHolder.subjectText.setText(subject);
+                viewHolder.leftBorder.setColor(getResources().getColor(R.color.blue));
             }
         };
         recyclerView.setAdapter(subjectAdapter);
     }
 
     // Subject view holder for Firebase Recycler View
-    private static class SubjectViewHolder extends RecyclerView.ViewHolder {
-        final TextView subjectView;
+    private static class SubjectHolder extends RecyclerView.ViewHolder {
+        final TextView subjectText;
         final ImageView removeButton;
+        final GradientDrawable leftBorder = (GradientDrawable) ((LayerDrawable)itemView.getBackground())
+                .findDrawableByLayerId(R.id.left_coloured_border);
 
-        public SubjectViewHolder(View itemView) {
+        public SubjectHolder(View itemView) {
             super(itemView);
 
-            subjectView = (TextView) itemView.findViewById(R.id.subjectName);
+            subjectText = (TextView) itemView.findViewById(R.id.subjectName);
             removeButton = (ImageView) itemView.findViewById(R.id.removeSubject);
 
             // Add the Remove Button Listener
             removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FirebaseUser.removeSubject(subjectView.getText().toString());
+                    FirebaseUser.removeSubject(subjectText.getText().toString());
                 }
             });
 
             // Add the Modify TextView Listener
-            subjectView.setOnClickListener(new View.OnClickListener() {
+            subjectText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
-                    final String oldSubjectName = subjectView.getText().toString();
+                    final String oldSubjectName = subjectText.getText().toString();
 
                     // Setup the Dialog and its Title
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle(context.getString(R.string.dialog_edit_subject));
+                    builder.setTitle(context.getString(R.string.message_edit_subject));
 
                     // Set up the Input Field
                     final EditText input = new EditText(context);

@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.app.LoaderManager.LoaderCallbacks;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,16 +28,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.gabrielezanelli.schoolendar.EventManager;
 import com.gabrielezanelli.schoolendar.FirebaseUser;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
@@ -55,19 +54,20 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> {
+public class SignInFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     //Id to identity READ_CONTACTS permission request.
     private static final int REQUEST_READ_CONTACTS = 0;
 
     // UI references.
     private AutoCompleteTextView emailEdit;
-    private EditText passwordEdit;
+    private TextInputEditText passwordEdit;
     private SignInButton googleSignInButton;
     private LoginButton facebookSignInButton;
     private Button signInButton;
@@ -87,7 +87,7 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
         getActivity().setTitle(getString(R.string.fragment_title_sign_in));
 
         emailEdit = (AutoCompleteTextView) thisFragment.findViewById(R.id.email);
-        passwordEdit = (EditText) thisFragment.findViewById(R.id.password);
+        passwordEdit = (TextInputEditText) thisFragment.findViewById(R.id.password);
         googleSignInButton = (SignInButton) thisFragment.findViewById(R.id.google_sign_in_button);
         facebookSignInButton = (LoginButton) thisFragment.findViewById(R.id.facebook_sign_in_button);
         signInButton = (Button) thisFragment.findViewById(R.id.sign_in_button);
@@ -184,65 +184,50 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
     }
 
     private void signInWithCredential(final AuthCredential credential) {
-        if(FirebaseUser.isAnonymous()) {
-            firebaseAuth.getCurrentUser().linkWithCredential(credential)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Log.d("Authentication State", "Credential link succeeded");
-                        onLoginSuccessful();
-                    }
-                    else {
-                        showProgress(false);
-                        Log.d("Authentication State", "Credential link failed");
-                        task.getException().toString();
-                        Toast.makeText(getActivity(), R.string.toast_authentication_failed, Toast.LENGTH_SHORT).show();
-                    }
 
-                }
-            });
-
+        if (FirebaseUser.isAnonymous()) {
+            try {
+                FirebaseUser.setBufferingEvents(EventManager.getInstance(getActivity()).getAllEvents(false));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        // TODO: Notify the changes when the account gets linked
-        else {
-            firebaseAuth.signInWithCredential(credential)
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d("Authentication State", "signInWithCredential:onComplete:" + task.isSuccessful());
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d("Authentication State", "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                            if (task.isSuccessful()) {
-                                onLoginSuccessful();
-                            } else {
-                                showProgress(false);
-                                try {
-                                    throw task.getException();
-                                } catch (com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ex) {
-                                    if (credential.getProvider().equals("password")) {
-                                        Log.d("Login Failed: ", "Wrong password");
-                                        passwordEdit.setError(getString(R.string.error_wrong_password));
-                                        passwordEdit.requestFocus();
-                                    } else {
-                                        Log.w("Authentication failed", "signInWithCredential", task.getException());
-                                        Toast.makeText(getActivity(), R.string.toast_authentication_failed, Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (Exception e) {
+                        if (task.isSuccessful()) {
+                            onLoginSuccessful();
+                        } else {
+                            showProgress(false);
+                            try {
+                                throw task.getException();
+                            } catch (com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ex) {
+                                if (credential.getProvider().equals("password")) {
+                                    Log.d("Login Failed: ", "Wrong password");
+                                    passwordEdit.setError(getString(R.string.error_wrong_password));
+                                    passwordEdit.requestFocus();
+                                } else {
                                     Log.w("Authentication failed", "signInWithCredential", task.getException());
                                     Toast.makeText(getActivity(), R.string.toast_authentication_failed, Toast.LENGTH_SHORT).show();
                                 }
+                            } catch (Exception e) {
+                                Log.w("Authentication failed", "signInWithCredential", task.getException());
+                                Toast.makeText(getActivity(), R.string.toast_authentication_failed, Toast.LENGTH_SHORT).show();
                             }
                         }
-                    });
-        }
+                    }
+                });
     }
 
     private void onLoginSuccessful() {
         showProgress(false);
         Toast.makeText(getActivity(), R.string.toast_login_successful, Toast.LENGTH_SHORT).show();
-        FragmentAccountPreferences account = new FragmentAccountPreferences();
-        ((MainActivity)getActivity()).fragmentTransaction(account,false,R.id.navAccount);
+        AccountPreferencesFragment account = new AccountPreferencesFragment();
+        ((MainActivity) getActivity()).fragmentTransaction(account, false, R.id.navAccount);
     }
 
     private void initLoginForm() {
@@ -250,15 +235,14 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
         populateAutoComplete();
 
         /**
-        passwordEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
+         passwordEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        @Override public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+        if (id == R.id.login || id == EditorInfo.IME_NULL) {
+        attemptLogin();
+        return true;
+        }
+        return false;
+        }
         });
          */
 
@@ -361,7 +345,8 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
         final String email = emailEdit.getText().toString();
         final String password = passwordEdit.getText().toString();
 
-        if (checkFields(email, password))
+        if (checkFields(email, password)) {
+            Log.d("Firebase", "Attempting registration");
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -369,25 +354,25 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
                     if (task.isSuccessful()) {
                         // If the registration was successful, login the user
                         signInWithCredential(EmailAuthProvider.getCredential(email, password));
-                    }
-                    else if (task.getException() != null)
-                            try {
-                                throw task.getException();
-                            } catch (com.google.firebase.auth.FirebaseAuthUserCollisionException ex) {
-                                // If the email is already registered, try to login
-                                Log.d("Registration failed", "Email already registered");
-                                signInWithCredential(EmailAuthProvider.getCredential(email, password));
-                            } catch (com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ex) {
-                                Log.d("Registration failed", "Bad email format");
-                                emailEdit.setError(getString(R.string.error_invalid_email));
-                                emailEdit.requestFocus();
-                                ex.printStackTrace();
-                            } catch (Exception ex) {
-                                Log.d("Registration Failed", task.getException().toString());
-                                ex.printStackTrace();
-                            }
-                    }
+                    } else if (task.getException() != null)
+                        try {
+                            throw task.getException();
+                        } catch (com.google.firebase.auth.FirebaseAuthUserCollisionException ex) {
+                            // If the email is already registered, try to login
+                            Log.d("Registration failed", "Email already registered");
+                            signInWithCredential(EmailAuthProvider.getCredential(email, password));
+                        } catch (com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ex) {
+                            Log.d("Registration failed", "Bad email format");
+                            emailEdit.setError(getString(R.string.error_invalid_email));
+                            emailEdit.requestFocus();
+                            ex.printStackTrace();
+                        } catch (Exception ex) {
+                            Log.d("Registration Failed", task.getException().toString());
+                            ex.printStackTrace();
+                        }
+                }
             });
+        }
     }
 
     private boolean isEmailValid(String email) {
@@ -437,7 +422,7 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(),
                 // Retrieve data rows for the device user's 'profile' contact.
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
@@ -454,6 +439,11 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
     }
 
     @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+    @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         List<String> emails = new ArrayList<>();
         cursor.moveToFirst();
@@ -465,10 +455,6 @@ public class FragmentSignIn extends Fragment implements LoaderCallbacks<Cursor> 
         addEmailsToAutoComplete(emails);
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.

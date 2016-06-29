@@ -26,6 +26,8 @@ public class TodayDecorator implements DayViewDecorator {
     public TodayDecorator(Context context) {
         color = context.getResources().getColor(R.color.light_blue);
         today = Calendar.getInstance(TimeZone.getDefault());
+        today.set(Calendar.MONTH,2);
+        today.set(Calendar.DAY_OF_MONTH,7);
         today.set(Calendar.HOUR_OF_DAY,0);
         today.clear(Calendar.MINUTE);
         today.clear(Calendar.SECOND);

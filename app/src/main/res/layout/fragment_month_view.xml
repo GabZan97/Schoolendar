@@ -20,6 +20,7 @@
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             app:mcv_selectionColor="@color/selection_blue"
+            app:mcv_firstDayOfWeek="monday"
             app:mcv_showOtherDates="all"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -27,7 +28,7 @@
 
     <!-- Floating Action Button at the bottom end of the activity -->
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/add_event_fab"
         app:elevation="@dimen/fab_elevation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

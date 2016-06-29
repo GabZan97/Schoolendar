@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="preference_accent">@color/selection_blue</color>
     <color name="dark_blue">#1A237E</color>
     <color name="blue">#303F9F</color>
     <color name="selection_blue">#3F51B5</color>
     <color name="light_blue">#579bf9</color>
-    <color name="red">#ec2121</color>
-    <color name="grey">#737373</color>
-    <color name="light_grey">#ebeaea</color>
+    <color name="aqua">#06e1cb</color>
+    <color name="red">#ff3737</color>
+    <color name="purple">#a022d8</color>
+    <color name="dark_grey">#1c1c1c</color>
+    <color name="grey">#292929</color>
+    <color name="soft_grey">#CABBBBBB</color>
+    <color name="really_light_grey">#ebeaea</color>
+    <color name="yellow">#f4f400</color>
+    <color name="orange">#ffa500</color>
+    <color name="green">#3bd83b</color>
     <color name="light_yellow">#fdfddc</color>
+    <color name="light_green">#f0ffeb</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 </resources>

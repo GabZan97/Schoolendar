@@ -37,7 +37,7 @@
         android:layout_marginBottom="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/new_subject_fab_margin_end"
         android:layout_marginStart="@dimen/activity_margin"
-        android:hint="@string/prompt_new_subject"
+        android:hint="@string/hint_new_subject"
 
         android:maxLines="1"
         android:textSize="@dimen/normal_text_size"
@@ -48,7 +48,7 @@
 
     <!-- Add Subject Button -->
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/add_event_fab"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -3,8 +3,9 @@
 
     <!-- Something -->
     <item
-        android:id="@+id/something"
-        android:orderInCategory="3"
-        android:title="Something"
-        app:showAsAction="never" />
+        android:id="@+id/menu_show_old_events"
+        android:orderInCategory="1"
+        android:title="@string/action_show_old_events"
+        app:showAsAction="never"
+        android:visible="false"/>
 </menu>

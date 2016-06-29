@@ -22,7 +22,7 @@ public class HighlightWeekendsDecorator implements DayViewDecorator {
     private final int color;
 
     public HighlightWeekendsDecorator(Context context) {
-        color = context.getResources().getColor(R.color.light_yellow);
+        color = context.getResources().getColor(R.color.light_green);
         highlightDrawable = new ColorDrawable(color);
     }
 

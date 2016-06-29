@@ -32,7 +32,7 @@ public class Event implements Serializable {
     @DatabaseField(columnName = "has_subject", canBeNull = false, dataType = DataType.BOOLEAN)
     private boolean hasSubject;
 
-    @DatabaseField(columnName = "event_date", canBeNull = false, dataType = DataType.LONG)
+    @DatabaseField(columnName = "event_date", canBeNull = false, dataType = DataType.LONG )
     private long date;
 
     @DatabaseField(columnName = "notification_date", dataType = DataType.LONG)
@@ -42,7 +42,7 @@ public class Event implements Serializable {
     private boolean hasNotification;
 
 
-    public enum eventType {Homework, Test, Communication, Note}
+    public enum eventType {Homework, Test, Project, Communication, Note, ClassevivaEvent}
 
     static List<String> subjectsNames = new ArrayList<>();
 

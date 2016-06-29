@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class FragmentMonthView extends Fragment implements View.OnClickListener {
+public class MonthViewFragment extends Fragment implements View.OnClickListener {
 
     // UI References
     private MaterialCalendarView calendarView;
@@ -32,11 +32,10 @@ public class FragmentMonthView extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View thisFragment = inflater.inflate(R.layout.fragment_month_view, container, false);
-
         getActivity().setTitle(getString(R.string.app_name));
 
         calendarView = (MaterialCalendarView) thisFragment.findViewById(R.id.calendarView);
-        thisFragment.findViewById(R.id.fab).setOnClickListener(this);
+        thisFragment.findViewById(R.id.add_event_fab).setOnClickListener(this);
 
         initCalendarView();
 
@@ -47,8 +46,8 @@ public class FragmentMonthView extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
-            case (R.id.fab):
-                ((MainActivity)getActivity()).fragmentTransaction(new FragmentAddEvent(),true,R.id.navAddEvent);
+            case (R.id.add_event_fab):
+                ((MainActivity)getActivity()).fragmentTransaction(new AddEventFragment(),true,R.id.navAddEvent);
         }
     }
 
@@ -81,7 +80,7 @@ public class FragmentMonthView extends Fragment implements View.OnClickListener 
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                FragmentListView allEvents = new FragmentListView();
+                ListViewFragment allEvents = new ListViewFragment();
                 Bundle extras = new Bundle();
                 extras.putLong(getString(R.string.EXTRA_LONG_DAY_SELECTED),date.getCalendar().getTimeInMillis());
                 allEvents.setArguments(extras);

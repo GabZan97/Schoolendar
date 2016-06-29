@@ -17,11 +17,11 @@
             android:title="@string/pref_image"
             android:summary="@string/pref_summary_image_unset">
         </Preference>
-        <com.gabrielezanelli.schoolendar.SpaggiariPreference
+        <com.gabrielezanelli.schoolendar.preferences.SpaggiariPreference
             android:key="@string/pref_key_spaggiari_account"
             android:title="@string/pref_spaggiari_account"
             android:summary="@string/pref_summary_spaggiari_account_unset">
-        </com.gabrielezanelli.schoolendar.SpaggiariPreference>
+        </com.gabrielezanelli.schoolendar.preferences.SpaggiariPreference>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/category_notifications">
@@ -40,7 +40,7 @@
             android:defaultValue="1"
             android:enabled="false"
             />
-        <com.gabrielezanelli.schoolendar.TimePreference
+        <com.gabrielezanelli.schoolendar.preferences.TimePreference
             android:key="@string/pref_key_notification_time"
             android:title="@string/pref_notification_time"
             android:defaultValue="@string/pref_default_notification_time"
@@ -51,7 +51,6 @@
     <PreferenceCategory android:title="@string/category_settings" >
         <Preference
             android:key="@string/pref_key_logout"
-            android:title="@string/pref_logout"
-            />
+            android:title="@string/pref_logout" />
     </PreferenceCategory>
 </PreferenceScreen>

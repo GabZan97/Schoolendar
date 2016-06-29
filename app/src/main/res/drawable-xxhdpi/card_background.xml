@@ -4,13 +4,14 @@
     <!-- Grey Rectangle for Shadow -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#CABBBBBB"/>
+            <solid android:color="@color/soft_grey"/>
             <corners android:radius="@dimen/card_elevation" />
         </shape>
     </item>
 
-    <!-- Colored Left Bar -->
+    <!-- Colored Left Border -->
     <item
+        android:id="@+id/left_coloured_border"
         android:left="0dp"
         android:right="0dp"
         android:top="0dp"

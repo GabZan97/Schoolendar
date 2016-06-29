@@ -1,11 +1,7 @@
 package com.gabrielezanelli.schoolendar.activities;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -21,26 +17,24 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
-import com.gabrielezanelli.schoolendar.services.AuthStateService;
 import com.gabrielezanelli.schoolendar.FirebaseUser;
 import com.gabrielezanelli.schoolendar.R;
-import com.gabrielezanelli.schoolendar.fragments.FragmentAccountPreferences;
-import com.gabrielezanelli.schoolendar.fragments.FragmentAddEvent;
-import com.gabrielezanelli.schoolendar.fragments.FragmentEvent;
-import com.gabrielezanelli.schoolendar.fragments.FragmentListView;
-import com.gabrielezanelli.schoolendar.fragments.FragmentManageSubjects;
-import com.gabrielezanelli.schoolendar.fragments.FragmentMonthView;
-import com.gabrielezanelli.schoolendar.fragments.FragmentSignIn;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
+import com.gabrielezanelli.schoolendar.fragments.AccountPreferencesFragment;
+import com.gabrielezanelli.schoolendar.fragments.AddEventFragment;
+import com.gabrielezanelli.schoolendar.fragments.EventFragment;
+import com.gabrielezanelli.schoolendar.fragments.ListViewFragment;
+import com.gabrielezanelli.schoolendar.fragments.ManageSubjectsFragment;
+import com.gabrielezanelli.schoolendar.fragments.MonthViewFragment;
+import com.gabrielezanelli.schoolendar.fragments.SignInFragment;
+import com.gabrielezanelli.schoolendar.services.AuthStateService;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
+
+    // TODO: Used in order to set image only one time, make it better
+    private boolean hasImage;
+
     // UI References
     private DrawerLayout drawer;
     private NavigationView navView;
@@ -63,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         PreferenceManager.setDefaultValues(this, R.xml.account_preferences, false);
 
         // Initialize FirebaseUser
-        FirebaseUser.setContext(this);
+        FirebaseUser.init(this);
+        hasImage = false;
 
         initAuthenticationService();
 
@@ -87,18 +82,20 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
     // Sets up the Option Menu behavior
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Called whenever an item is selected
-
-
         return super.onOptionsItemSelected(item);
-
     }
 
     private void initAuthenticationService() {
-        Log.d("Service", "Service Called");
         startService(new Intent(this, AuthStateService.class));
     }
 
@@ -107,11 +104,15 @@ public class MainActivity extends AppCompatActivity {
         if (eventID == -1)
             return;
 
-        FragmentEvent event = new FragmentEvent();
+        EventFragment event = new EventFragment();
         Bundle extras = new Bundle();
         extras.putLong(getString(R.string.EXTRA_LONG_EVENT_ID), eventID);
         event.setArguments(extras);
         fragmentTransaction(event, true, -666);
+    }
+
+    public void unsetUserImage() {
+        imageView.setImageDrawable(getResources().getDrawable(R.drawable.user_default_image));
     }
 
     // Nav item > -1 is valid
@@ -138,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction()
+        android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.animator.slide_in_from_left, R.animator.slide_out_to_right,
-                        R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+                        R.animator.slide_out_to_right, R.animator.slide_in_from_left)
                 .replace(R.id.fragment_container, nextFragment);
         if (addToBackStack)
             fragmentTransaction.addToBackStack(null);
@@ -170,13 +171,14 @@ public class MainActivity extends AppCompatActivity {
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 if (slideOffset > 0) {
                     // The drawer started opening
-
+                   // Log.d("Drawer", "User logged: "+FirebaseUser.isLogged()+" anonym: "+FirebaseUser.isAnonymous());
                     if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
                         usernameText.setText(getString(R.string.message_welcome_user, FirebaseUser.getUsername()));
                         emailText.setText(FirebaseUser.getEmail());
-                        if (FirebaseUser.getPhotoUrl() != null) {
+                        if (FirebaseUser.getImage() != null && !hasImage) {
                             Log.d("Image", "Setting from URI");
-                            setImageFromFirebaseUser();
+                            hasImage = true;
+                            imageView.setImageBitmap(FirebaseUser.getImage());
                         }
                     } else {
                         usernameText.setText(getString(R.string.message_welcome_user, getString(R.string.pref_default_username)));
@@ -205,23 +207,23 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.navAddEvent:
-                        nextFragment = new FragmentAddEvent();
+                        nextFragment = new AddEventFragment();
                         break;
                     case R.id.navManageSubjects:
-                        nextFragment = new FragmentManageSubjects();
+                        nextFragment = new ManageSubjectsFragment();
                         break;
                     case R.id.navAllEvents:
-                        nextFragment = new FragmentListView();
+                        nextFragment = new ListViewFragment();
                         break;
                     case R.id.navAccount:
                         if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
-                            nextFragment = new FragmentAccountPreferences();
+                            nextFragment = new AccountPreferencesFragment();
                         } else {
-                            nextFragment = new FragmentSignIn();
+                            nextFragment = new SignInFragment();
                         }
                         break;
                     default:
-                        nextFragment = new FragmentMonthView();
+                        nextFragment = new MonthViewFragment();
                         break;
                 }
                 drawer.closeDrawer(GravityCompat.START);
@@ -229,44 +231,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        fragmentTransaction(new FragmentMonthView(), false, R.id.navMonthView);
+        fragmentTransaction(new MonthViewFragment(), false, R.id.navMonthView);
     }
 
-    // TODO: Make it an async task, because get() waits for it to finish
-    private void setImageFromFirebaseUser() {
-        try {
-            imageView.setImageBitmap(new LoadImageFromFirebaseUser().execute().get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private class LoadImageFromFirebaseUser extends AsyncTask<String, Void, Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            try {
-                URL url = new URL(""+FirebaseUser.getPhotoUrl());
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
 }

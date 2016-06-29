@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -26,7 +28,7 @@ import java.nio.channels.FileChannel;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FragmentAccountPreferences extends PreferenceFragment {
+public class AccountPreferencesFragment extends PreferenceFragment {
     SharedPreferences.OnSharedPreferenceChangeListener listener;
     SharedPreferences sharedPreferences;
 
@@ -42,9 +44,9 @@ public class FragmentAccountPreferences extends PreferenceFragment {
         initSharedPrefListener();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
         initSharedPrefValues();
     }
+
 
     @Override
     public void onResume() {
@@ -69,7 +71,7 @@ public class FragmentAccountPreferences extends PreferenceFragment {
         findPreference(getString(R.string.pref_key_email)).setSummary(FirebaseUser.getEmail());
 
         String imageSummary;
-        if(FirebaseUser.getPhotoUrl()==null)
+        if(FirebaseUser.getImage()==null)
             imageSummary = getString(R.string.pref_summary_image_unset);
         else
             imageSummary = getString(R.string.pref_summary_image_set);
@@ -81,6 +83,7 @@ public class FragmentAccountPreferences extends PreferenceFragment {
         findPreference(getString(R.string.pref_key_notification_time)).setEnabled(defaultNotificationsEnabled);
 
     }
+
     private void initSharedPrefListener() {
         listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences sharedPref, String preferenceKey) {
@@ -195,13 +198,13 @@ public class FragmentAccountPreferences extends PreferenceFragment {
 
     }
 
-    // TODO: Handle shared preferences ovverride on another login or cancel on logout
     private void setLogoutPreferenceClickListener() {
         findPreference(getString(R.string.pref_key_logout)).setOnPreferenceClickListener( new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick( Preference pref ) {
 
                 FirebaseAuth.getInstance().signOut();
-                ((MainActivity)getActivity()).fragmentTransaction(new FragmentSignIn(),false,R.id.navAccount);
+                ((MainActivity)getActivity()).unsetUserImage();
+                ((MainActivity)getActivity()).fragmentTransaction(new SignInFragment(),false,R.id.navAccount);
                 return true;
             }
         } );

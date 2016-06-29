@@ -1,4 +1,4 @@
-package com.gabrielezanelli.schoolendar;
+package com.gabrielezanelli.schoolendar.preferences;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -6,6 +6,8 @@ import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
+
+import com.gabrielezanelli.schoolendar.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

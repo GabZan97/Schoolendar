@@ -15,7 +15,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
-import com.gabrielezanelli.schoolendar.fragments.FragmentEvent;
 
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +47,7 @@ public class NotificationPusher extends BroadcastReceiver {
             String notificationText;
             // Sets the notification
             if (event.hasSubject()) {
-                notificationTitle = event.getSubject() + "'s " + event.getType().toString();
+                notificationTitle = event.getTypePlusSubject();
                 notificationText = context.getString(R.string.event_notification_default_text);
             } else {
                 notificationTitle = event.getType().toString();
@@ -61,7 +60,7 @@ public class NotificationPusher extends BroadcastReceiver {
 
             /** Stack Method used for Regular Activities
              TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-             stackBuilder.addParentStack(FragmentEvent.class);
+             stackBuilder.addParentStack(EventFragment.class);
              stackBuilder.addNextIntent(notificationIntent);
 
              PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

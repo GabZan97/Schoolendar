@@ -1,7 +1,17 @@
 package com.gabrielezanelli.schoolendar;
 
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
-import com.gabrielezanelli.schoolendar.fragments.FragmentEvent;
+import com.gabrielezanelli.schoolendar.fragments.EventFragment;
 
 import org.apache.commons.lang.WordUtils;
 
@@ -19,6 +29,7 @@ import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
     private final List<Event> allEvents;
+    private String filter = "";
 
     public EventAdapter(List<Event> allEvents) {
         this.allEvents = new ArrayList<>(allEvents);
@@ -34,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     // When the View Holder get scrolled or updated, updates the view holder's content
     @Override
     public void onBindViewHolder(EventHolder eventHolder, int position) {
-        eventHolder.update(allEvents.get(position));
+        eventHolder.update(allEvents.get(position), filter);
     }
 
     @Override
@@ -42,34 +53,39 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         return allEvents.size();
     }
 
-    public void animateTo(List<Event> models) {
-        applyAndAnimateRemovals(models);
-        applyAndAnimateAdditions(models);
-        applyAndAnimateMovedItems(models);
+    public void updateEventList(List<Event> events, String filter) {
+        if (filter == null)
+            this.filter = "";
+        else
+            this.filter = filter;
+
+        applyAndAnimateRemovals(events);
+        applyAndAnimateAdditions(events);
+        applyAndAnimateMovedItems(events);
     }
 
-    private void applyAndAnimateRemovals(List<Event> newModels) {
+    private void applyAndAnimateRemovals(List<Event> newEvents) {
         for (int i = allEvents.size() - 1; i >= 0; i--) {
-            final Event model = allEvents.get(i);
-            if (!newModels.contains(model)) {
+            final Event event = allEvents.get(i);
+            if (!newEvents.contains(event)) {
                 removeItem(i);
             }
         }
     }
 
-    private void applyAndAnimateAdditions(List<Event> newModels) {
-        for (int i = 0, count = newModels.size(); i < count; i++) {
-            final Event model = newModels.get(i);
-            if (!allEvents.contains(model)) {
-                addItem(i, model);
+    private void applyAndAnimateAdditions(List<Event> newEvents) {
+        for (int i = 0, count = newEvents.size(); i < count; i++) {
+            final Event event = newEvents.get(i);
+            if (!allEvents.contains(event)) {
+                addItem(i, event);
             }
         }
     }
 
-    private void applyAndAnimateMovedItems(List<Event> newModels) {
-        for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
-            final Event model = newModels.get(toPosition);
-            final int fromPosition = allEvents.indexOf(model);
+    private void applyAndAnimateMovedItems(List<Event> newEvents) {
+        for (int toPosition = newEvents.size() - 1; toPosition >= 0; toPosition--) {
+            final Event event = newEvents.get(toPosition);
+            final int fromPosition = allEvents.indexOf(event);
             if (fromPosition >= 0 && fromPosition != toPosition) {
                 moveItem(fromPosition, toPosition);
             }
@@ -77,54 +93,124 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     }
 
     public Event removeItem(int position) {
-        final Event model = allEvents.remove(position);
+        final Event event = allEvents.remove(position);
         notifyItemRemoved(position);
-        return model;
+        return event;
     }
 
-    public void addItem(int position, Event model) {
-        allEvents.add(position, model);
+    public void addItem(int position, Event event) {
+        allEvents.add(position, event);
         notifyItemInserted(position);
     }
 
     public void moveItem(int fromPosition, int toPosition) {
-        final Event model = allEvents.remove(fromPosition);
-        allEvents.add(toPosition, model);
+        final Event event = allEvents.remove(fromPosition);
+        allEvents.add(toPosition, event);
         notifyItemMoved(fromPosition, toPosition);
     }
 
 
     static class EventHolder extends RecyclerView.ViewHolder {
+
         private TextView titleText;
         private TextView dateText;
         private TextView typeSubjectText;
         private String dateFormat;
+        private StyleSpan bold;
+        private BackgroundColorSpan backgroundHighlight;
+        private GradientDrawable leftBorder;
+        private Resources res;
 
         private EventHolder(View itemView) {
             super(itemView);
             titleText = (TextView) itemView.findViewById(R.id.event_card_title);
             dateText = (TextView) itemView.findViewById(R.id.event_card_date);
             dateFormat = itemView.getResources().getString(R.string.event_date_format);
-            typeSubjectText = (TextView) itemView.findViewById(R.id.event_card_type_sujbject);
+            typeSubjectText = (TextView) itemView.findViewById(R.id.event_card_type_subject);
+            bold = new StyleSpan(android.graphics.Typeface.BOLD);
+
+            res = itemView.getResources();
+            leftBorder = (GradientDrawable) ((LayerDrawable)itemView.getBackground())
+                    .findDrawableByLayerId(R.id.left_coloured_border);
+            
+            backgroundHighlight = new BackgroundColorSpan(res.getColor(R.color.yellow));
         }
 
-        private void update(final Event updatingEvent) {
-            titleText.setText(updatingEvent.getTitle());
+        private void update(final Event updatingEvent, String filter) {
 
-            String date = WordUtils.capitalize(new SimpleDateFormat(dateFormat).format(updatingEvent.getDate()));
-            dateText.setText(date);
+            // Highlight the searched text  {START}
+            String newTitle = updatingEvent.getTitle();
+            String newTypeSubject = updatingEvent.getTypePlusSubject();
+            String newDate = WordUtils.capitalize(new SimpleDateFormat(dateFormat).format(updatingEvent.getDate()));
+            int filterLength = filter.length();
 
-            typeSubjectText.setText(updatingEvent.getTypePlusSubject());
+            if (filterLength<1) {
+                titleText.setText(newTitle);
+                typeSubjectText.setText(newTypeSubject);
+                dateText.setText(newDate);
+            } else {
+                int titleStart = newTitle.toLowerCase().indexOf(filter.toLowerCase());
+                // TODO: Highlight only start of the string for the type
+                // TODO: Highlight nly start of the string for the subject
+                int typeSubjectStart = newTypeSubject.toLowerCase().indexOf(filter.toLowerCase());
+                int dateStart = newDate.toLowerCase().indexOf(filter.toLowerCase());
+
+                if(titleStart>=0) {
+                    int titleEnd = titleStart + filterLength;
+                    Spannable titleSpannable = new SpannableString(newTitle);
+                    titleSpannable.setSpan(backgroundHighlight, titleStart, titleEnd, Spanned.SPAN_COMPOSING);
+                    titleSpannable.setSpan(bold, titleStart, titleEnd, Spanned.SPAN_COMPOSING);
+                    titleText.setText(titleSpannable);
+                }
+                else
+                    titleText.setText(newTitle);
+                if(typeSubjectStart>=0) {
+                    int typeSubjectEnd = typeSubjectStart + filterLength;
+                    Spannable typeSubjectSpannable = new SpannableString(newTypeSubject);
+                    typeSubjectSpannable.setSpan(backgroundHighlight, typeSubjectStart, typeSubjectEnd, Spanned.SPAN_COMPOSING);
+                    typeSubjectSpannable.setSpan(bold, typeSubjectStart, typeSubjectEnd, Spanned.SPAN_COMPOSING);
+                    typeSubjectText.setText(typeSubjectSpannable);
+                }
+                else
+                    typeSubjectText.setText(newTypeSubject);
+                if(dateStart>=0) {
+                    int dateEnd = dateStart + filterLength;
+                    Spannable dateSpannable = new SpannableString(newDate);
+                    dateSpannable.setSpan(backgroundHighlight,dateStart,dateEnd,Spanned.SPAN_COMPOSING);
+                    dateSpannable.setSpan(bold,dateStart,dateEnd,Spanned.SPAN_COMPOSING);
+                    dateText.setText(dateSpannable);
+                }
+                else
+                    dateText.setText(newDate);
+            }
+            // Highlight the searched text  {START}
+
+            // Set the color of the border  {START}
+            Event.eventType type = Event.eventType.valueOf(updatingEvent.getType());
+
+            if(type == Event.eventType.Homework)
+                leftBorder.setColor(res.getColor(R.color.yellow));
+            else if(type == Event.eventType.Test)
+                leftBorder.setColor(res.getColor(R.color.red));
+            else if(type == Event.eventType.Project)
+                leftBorder.setColor(res.getColor(R.color.blue));
+            else if(type == Event.eventType.Communication)
+                leftBorder.setColor(res.getColor(R.color.green));
+            else if(type == Event.eventType.Note)
+                leftBorder.setColor(res.getColor(R.color.aqua));
+            else if(type == Event.eventType.ClassevivaEvent)
+                leftBorder.setColor(res.getColor(R.color.orange));
+            // Highlight the searched text  {END}
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FragmentEvent event = new FragmentEvent();
+                    EventFragment event = new EventFragment();
                     Bundle extras = new Bundle();
-                    extras.putLong(v.getContext().getString(R.string.EXTRA_LONG_EVENT_ID),updatingEvent.getId());
+                    extras.putLong(v.getContext().getString(R.string.EXTRA_LONG_EVENT_ID), updatingEvent.getId());
                     event.setArguments(extras);
-                    Log.d("All Events", "Opening event with ID: "+updatingEvent.getId());
-                    ((MainActivity)v.getContext()).fragmentTransaction(event,true,-666);
+                    Log.d("All Events", "Opening event with ID: " + updatingEvent.getId());
+                    ((MainActivity) v.getContext()).fragmentTransaction(event, true, -666);
                 }
             });
 
