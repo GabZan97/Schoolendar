@@ -48,8 +48,8 @@ public class EventInformationSubFragment extends Fragment {
         return thisFragment;
     }
 
-    private boolean getEventFromID(long eventID) {
-        if (eventID == -1) {
+    private boolean getEventFromID(String eventID) {
+        if (eventID.equals("")) {
             Log.d("Event", "Error while retrieving  Event ID from Args");
             return false;
         }
@@ -70,7 +70,7 @@ public class EventInformationSubFragment extends Fragment {
 
     private void displayEventInformation() {
         textTitle.setText(notificationEvent.getTitle());
-        textTypeSubject.setText(notificationEvent.getTypePlusSubject());
+        textTypeSubject.setText(notificationEvent.chainTypePlusSubject());
         textDescription.setText(notificationEvent.getDescription());
         textDate.setText(new SimpleDateFormat(dateFormat).format(notificationEvent.getDate()));
         if (notificationEvent.hasNotification())

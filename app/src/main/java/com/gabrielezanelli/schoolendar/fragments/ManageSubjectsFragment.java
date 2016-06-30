@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,8 +102,8 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
         public SubjectHolder(View itemView) {
             super(itemView);
 
-            subjectText = (TextView) itemView.findViewById(R.id.subjectName);
-            removeButton = (ImageView) itemView.findViewById(R.id.removeSubject);
+            subjectText = (TextView) itemView.findViewById(R.id.subject_name_text);
+            removeButton = (ImageView) itemView.findViewById(R.id.remove_subject_button);
 
             // Add the Remove Button Listener
             removeButton.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +118,7 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
+
                     final String oldSubjectName = subjectText.getText().toString();
 
                     // Setup the Dialog and its Title
@@ -126,16 +126,16 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
                     builder.setTitle(context.getString(R.string.message_edit_subject));
 
                     // Set up the Input Field
-                    final EditText input = new EditText(context);
+                    View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_subject, null);
+                    final EditText input = (EditText)view.findViewById(R.id.edit_subject_name);
 
-                    // Specify the type of input expected
-                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    // Set the subject name as text
                     input.setText(oldSubjectName);
-                    // TODO: Add margins to the EditText
-                    builder.setView(input);
+
+                    builder.setView(view);
 
                     // Set up the buttons
-                    builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(context.getString(R.string.action_confirm), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             // Edit the subject in Firebase Database
@@ -143,15 +143,14 @@ public class ManageSubjectsFragment extends Fragment implements View.OnClickList
                             FirebaseUser.updateSubject(oldSubjectName,newSubjectName);
                         }
                     });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(context.getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     });
-                    builder.create();
-                    builder.show();
-
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
             });
         }

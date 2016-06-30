@@ -62,11 +62,14 @@ public class AccountPreferencesFragment extends PreferenceFragment {
 
     private void initSharedPrefValues() {
 
+        // Set the Current User's information to the shared preferences
         sharedPreferences.edit()
                 .putString(getString(R.string.pref_key_username), FirebaseUser.getUsername())
                 .putString(getString(R.string.pref_key_email), FirebaseUser.getEmail())
                 .apply();
 
+
+        // Set the Fragment Shared Preferences' summary to the current information
         findPreference(getString(R.string.pref_key_username)).setSummary(FirebaseUser.getUsername());
         findPreference(getString(R.string.pref_key_email)).setSummary(FirebaseUser.getEmail());
 

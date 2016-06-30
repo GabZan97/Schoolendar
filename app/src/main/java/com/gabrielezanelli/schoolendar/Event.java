@@ -14,8 +14,8 @@ import java.util.List;
 public class Event implements Serializable {
 
     // TODO: EVERY TIME THIS CLASS CHANGES, RUN THE ORMLITE CONFIG MANAGER
-    @DatabaseField(columnName = "id", generatedId = true, canBeNull = false, dataType = DataType.LONG, throwIfNull = true)
-    private long id;
+    @DatabaseField(columnName = "id", canBeNull = false, id = true)
+    private String id;
 
     @DatabaseField(columnName = "title", canBeNull = false)
     private String title;
@@ -89,18 +89,18 @@ public class Event implements Serializable {
         this.hasNotification = false;
     }
 
-    public String getTypePlusSubject() {
+    public String chainTypePlusSubject() {
         if (hasSubject)
             return subject + "'s " + type;
         else
             return type;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

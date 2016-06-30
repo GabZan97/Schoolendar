@@ -50,7 +50,7 @@ public class AuthStateService extends Service {
         // Gets Firebase Authentication Listener in order to add it onStart
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public synchronized void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 com.google.firebase.auth.FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
                     // FirebaseUser is signed in
@@ -60,7 +60,7 @@ public class AuthStateService extends Service {
                 } else {
                     // FirebaseUser is signed out
                     Log.d("AuthState Service", "onAuthStateChanged: User signed out");
-                    FirebaseUser.clearInfo();
+                    FirebaseUser.clearUser();
 
                     // Sign in Anonymously
                     firebaseAuth.signInAnonymously()
@@ -76,10 +76,8 @@ public class AuthStateService extends Service {
                         }
                     });
 
-
                 }
             }
         };
-        Log.d("Service","Service Initialized");
     }
 }

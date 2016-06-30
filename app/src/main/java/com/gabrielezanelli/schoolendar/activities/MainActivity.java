@@ -100,13 +100,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getExtraEventIdFromIntent() {
-        long eventID = getIntent().getLongExtra(getString(R.string.EXTRA_LONG_EVENT_ID), -1);
+        long eventID = getIntent().getLongExtra(getString(R.string.EXTRA_STRING_EVENT_ID), -1);
         if (eventID == -1)
             return;
 
         EventFragment event = new EventFragment();
         Bundle extras = new Bundle();
-        extras.putLong(getString(R.string.EXTRA_LONG_EVENT_ID), eventID);
+        extras.putLong(getString(R.string.EXTRA_STRING_EVENT_ID), eventID);
         event.setArguments(extras);
         fragmentTransaction(event, true, -666);
     }
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
                         usernameText.setText(getString(R.string.message_welcome_user, FirebaseUser.getUsername()));
                         emailText.setText(FirebaseUser.getEmail());
-                        if (FirebaseUser.getImage() != null && !hasImage) {
+                        if (!hasImage && FirebaseUser.getImage() != null) {
                             Log.d("Image", "Setting from URI");
                             hasImage = true;
                             imageView.setImageBitmap(FirebaseUser.getImage());
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        fragmentTransaction(new MonthViewFragment(), false, R.id.navMonthView);
+        fragmentTransaction(new MonthViewFragment(), true, R.id.navMonthView);
     }
 
 }

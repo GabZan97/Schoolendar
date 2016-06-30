@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.gabrielezanelli.schoolendar.spaggiari.ClassevivaEvent;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -19,12 +20,12 @@ import java.util.Map;
 
 public class EventManager extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "schoolendar";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 13;
     private static EventManager eventManagerInstance = null;
     /**
      * DAO: Data Access Object used to interact with SQLite in order to perform CRUD operations.
      */
-    private static Dao<Event, Long> dao = null;
+    private static Dao<Event, String> dao = null;
 
 
     public static EventManager getInstance(Context context) {
@@ -55,7 +56,7 @@ public class EventManager extends OrmLiteSqliteOpenHelper {
         values.put("type",Event.eventType.ClassevivaEvent);
         values.put("event_date",classevivaEvent.getDate());
 
-        if((dao.queryForFieldValues(values)).isEmpty()) {
+        if((dao.queryForFieldValuesArgs(values)).isEmpty()) {
             Event newClassevivaEvent = new Event(
                     classevivaEvent.getTitle(),
                     classevivaEvent.getDescription(),
@@ -66,12 +67,12 @@ public class EventManager extends OrmLiteSqliteOpenHelper {
         }
     }
 
-    public void deleteEvent(long eventID) throws SQLException {
+    public void deleteEvent(String eventID) throws SQLException {
         dao.deleteById(eventID);
     }
 
-    public Event getEvent(long id) throws SQLException {
-        return dao.queryForId(id);
+    public Event getEvent(String eventID) throws SQLException {
+        return dao.queryForId(eventID);
     }
 
     public List<Event> getAllEvents(boolean onlyFutureEvents) throws SQLException {

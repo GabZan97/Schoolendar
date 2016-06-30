@@ -20,7 +20,8 @@
         <com.gabrielezanelli.schoolendar.preferences.SpaggiariPreference
             android:key="@string/pref_key_spaggiari_account"
             android:title="@string/pref_spaggiari_account"
-            android:summary="@string/pref_summary_spaggiari_account_unset">
+            android:summary="@string/pref_summary_spaggiari_account_unset"
+            >
         </com.gabrielezanelli.schoolendar.preferences.SpaggiariPreference>
     </PreferenceCategory>
 

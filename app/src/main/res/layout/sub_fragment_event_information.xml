@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Event Content -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:paddingStart="@dimen/event_content_margin"
-    android:paddingEnd="@dimen/event_content_margin"
-    android:paddingTop="@dimen/event_content_margin"
-
-    android:paddingBottom="@dimen/event_content_bottom_margin"
     android:orientation="vertical">
 
     <!-- Title Row -->

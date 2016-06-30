@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/MaterialTheme.NoActionBar">
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -59,7 +59,7 @@
         <service android:name=".services.AuthStateService" />
 
         <service
-            android:name=".services.SpaggiariManagerService"
+            android:name=".services.SpaggiariDownloaderService"
             android:enabled="true"
             android:exported="true"/>
 

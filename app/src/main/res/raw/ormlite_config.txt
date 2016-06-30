@@ -1,5 +1,5 @@
 #
-# generated on 2016/06/08 07:06:12
+# generated on 2016/06/30 09:47:17
 #
 # --table-start--
 dataClass=com.gabrielezanelli.schoolendar.Event
@@ -8,10 +8,8 @@ tableName=event
 # --field-start--
 fieldName=id
 columnName=id
-dataPersister=LONG
 canBeNull=false
-generatedId=true
-throwIfNull=true
+id=true
 # --field-end--
 # --field-start--
 fieldName=title

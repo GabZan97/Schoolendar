@@ -1,8 +1,6 @@
 package com.gabrielezanelli.schoolendar;
 
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -140,7 +138,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
             // Highlight the searched text  {START}
             String newTitle = updatingEvent.getTitle();
-            String newTypeSubject = updatingEvent.getTypePlusSubject();
+            String newTypeSubject = updatingEvent.chainTypePlusSubject();
             String newDate = WordUtils.capitalize(new SimpleDateFormat(dateFormat).format(updatingEvent.getDate()));
             int filterLength = filter.length();
 
@@ -207,7 +205,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
                 public void onClick(View v) {
                     EventFragment event = new EventFragment();
                     Bundle extras = new Bundle();
-                    extras.putLong(v.getContext().getString(R.string.EXTRA_LONG_EVENT_ID), updatingEvent.getId());
+                    extras.putString(v.getContext().getString(R.string.EXTRA_STRING_EVENT_ID), updatingEvent.getId());
                     event.setArguments(extras);
                     Log.d("All Events", "Opening event with ID: " + updatingEvent.getId());
                     ((MainActivity) v.getContext()).fragmentTransaction(event, true, -666);

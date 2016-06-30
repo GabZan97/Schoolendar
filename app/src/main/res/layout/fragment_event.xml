@@ -8,20 +8,26 @@
     android:clipToPadding="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabSelectedTextColor="@color/selection_blue"
+        app:tabIndicatorHeight="3dp"
+        />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/activity_margin"
-        >
 
-    <android.support.v4.view.PagerTabStrip
-        android:id="@+id/pager_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:theme="@style/SpecialText"
-        android:padding="4dp" />
+        android:layout_marginTop="@dimen/event_content_top_margin"
+        android:layout_marginBottom="@dimen/event_content_bottom_margin"
+
+        android:layout_marginStart="@dimen/event_content_horizontal_margin"
+        android:layout_marginEnd="@dimen/event_content_horizontal_margin" >
 
     </android.support.v4.view.ViewPager>
 

@@ -9,6 +9,8 @@
     <string name="fragment_title_account">Account</string>
     <string name="fragment_title_event">Event</string>
     <string name="fragment_title_event_not_found">Event not found</string>
+    <string name="fragment_title_event_information">Information</string>
+    <string name="fragment_title_event_tasks">Tasks</string>
 
     <!-- Menu Drawer Items -->
     <string name="menu_drawer_months_view">Month View</string>
@@ -20,10 +22,11 @@
     <!-- Hint Texts -->
     <string name="hint_title">Event Title</string>
     <string name="hint_description">Write a description… (optional)</string>
-    <string name="hint_new_subject">New Subject…</string>
+    <string name="hint_new_subject">Add new subject…</string>
     <string name="hint_date_picker">Select a date</string>
     <string name="hint_notification_picker">Set a notification</string>
-    <string name="hint_search">Search...</string>
+    <string name="hint_add_task">Add new task…</string>
+    <string name="hint_search">Search…</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_school_code">School Code</string>
@@ -32,6 +35,7 @@
     <!-- Buttons Texts -->
     <string name="action_add">Add</string>
     <string name="action_set">Set</string>
+    <string name="action_confirm">Confirm</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_login">Login</string>
     <string name="action_sign_in">Sign in</string>
@@ -65,7 +69,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
 
     <!-- Notifications stuff -->
-    <string name="EXTRA_LONG_EVENT_ID">com.gabrielezanelli.schoolendar.extra_long_event_id</string>
+    <string name="EXTRA_STRING_EVENT_ID">com.gabrielezanelli.schoolendar.extra_string_event_id</string>
+    <string name="EXTRA_INT_NOTIFICATION_ID">com.gabrielezanelli.schoolendar.extra_int_notification_id</string>
     <string name="EXTRA_LONG_DAY_SELECTED">com.gabrielezanelli.schoolendar.extra_long_day_selected</string>
     <string name="event_notification_default_text">Click here to see more information</string>
 

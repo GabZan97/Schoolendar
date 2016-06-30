@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing"
+        android:layout_marginBottom="@dimen/dialog_item_spacing"
         android:text="@string/hint_school_code"
         android:textStyle="bold" />
 
@@ -15,12 +15,12 @@
         android:id="@+id/school_code_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing" />
+        android:layout_marginBottom="@dimen/dialog_item_spacing" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing"
+        android:layout_marginBottom="@dimen/dialog_item_spacing"
         android:text="@string/hint_user_code"
         android:textStyle="bold" />
 
@@ -28,12 +28,12 @@
         android:id="@+id/user_code_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing" />
+        android:layout_marginBottom="@dimen/dialog_item_spacing" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/event_content_spacing"
+        android:layout_marginBottom="@dimen/dialog_item_spacing"
         android:text="@string/hint_password"
         android:textStyle="bold" />
 

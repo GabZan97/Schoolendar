@@ -26,13 +26,15 @@ public class LoopjHTTPHelper implements LoopjSpaggiariHelper {
 
             boolean isFirstArg = true;
             for (Map.Entry<String, String> entry : arguments.entrySet()) {
-                if (isFirstArg)
+                if (isFirstArg) {
                     urlString += "?";
+                    isFirstArg = false;
+                }
                 else
                     urlString += "&";
 
                 urlString += entry.getKey() + "=" + entry.getValue();
-                isFirstArg = false;
+
             }
 
         }
@@ -41,8 +43,10 @@ public class LoopjHTTPHelper implements LoopjSpaggiariHelper {
         client.get(urlString, new TextHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                /**
                 for (int i = 0; i < headers.length; i++)
                     Log.d("Header n" + i, headers[i].toString());
+                 */
                 listener.onSuccess(responseString);
             }
 

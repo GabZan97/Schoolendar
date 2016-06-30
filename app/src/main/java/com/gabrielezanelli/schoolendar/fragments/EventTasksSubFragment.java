@@ -2,10 +2,11 @@ package com.gabrielezanelli.schoolendar.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import com.gabrielezanelli.schoolendar.FirebaseUser;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.Task;
 
-public class EventTasksListSubFragment extends Fragment {
+public class EventTasksSubFragment extends Fragment {
 
     // UI References
     private FirebaseRecyclerAdapter<Task, TaskHolder> taskAdapter;
@@ -43,12 +44,13 @@ public class EventTasksListSubFragment extends Fragment {
         return thisFragment;
     }
 
+
     private void initTaskList() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
         taskAdapter = new FirebaseRecyclerAdapter<Task, TaskHolder>
-                (Task.class, R.layout.item_checkbox_text, TaskHolder.class, FirebaseUser.getTasksRef(EventFragment.getSelectedEventID())) {
+                (Task.class, R.layout.item_task, TaskHolder.class, FirebaseUser.getTasksRef(EventFragment.getSelectedEventID())) {
             @Override
             protected void populateViewHolder(TaskHolder viewHolder, Task task, int position) {
                 viewHolder.taskText.setText(task.getText());
@@ -80,17 +82,19 @@ public class EventTasksListSubFragment extends Fragment {
         });
 
         // TODO: Fix recycler view not showing any elements at start, this doesn't notify it
-        taskAdapter.notifyDataSetChanged();
+
     }
 
     static class TaskHolder extends RecyclerView.ViewHolder {
         private EditText taskText;
         private CheckBox taskCheckbox;
+        private FloatingActionButton deleteTaskButton;
 
         public TaskHolder(View itemView) {
             super(itemView);
             taskText = (EditText) itemView.findViewById(R.id.task_edit_text);
             taskCheckbox = (CheckBox) itemView.findViewById(R.id.task_checkbox);
+
 
             taskCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -98,6 +102,28 @@ public class EventTasksListSubFragment extends Fragment {
                     FirebaseUser.updateTaskComplete(EventFragment.getSelectedEventID(),new Task(taskText.getText().toString(),isChecked));
                 }
             });
+
+
+            deleteTaskButton = (FloatingActionButton) itemView.findViewById(R.id.delete_task_fab);
+            deleteTaskButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FirebaseUser.removeTask(EventFragment.getSelectedEventID(),taskText.getText().toString());
+                }
+            });
+
+            taskText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus){
+                        deleteTaskButton.setVisibility(View.VISIBLE);
+                    }else {
+                        deleteTaskButton.setVisibility(View.GONE);
+                        // TODO: Update task text
+                    }
+                }
+            });
+
         }
 
     }

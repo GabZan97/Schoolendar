@@ -26,17 +26,18 @@ public class NotificationPusher extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent workIntent) {
-        EXTRA_LONG_EVENT_ID = context.getString(R.string.EXTRA_LONG_EVENT_ID);
 
         // Gets the event from the database using the ID received in the intent
-        long ID = workIntent.getLongExtra(EXTRA_LONG_EVENT_ID, -1);
-        Log.d("ID Pusher", "" + ID);
+        String eventID = workIntent.getStringExtra(context.getString(R.string.EXTRA_STRING_EVENT_ID));
+        //int notificationID = workIntent.getIntExtra(context.getString(R.string.EXTRA_INT_NOTIFICATION_ID),-1);
 
+        // TODO get the notification id atomic
+        Log.d("ID Pusher","ID: "+ eventID);
 
         EventManager eventManager = EventManager.getInstance(context);
         Event event = null;
         try {
-            event = eventManager.getEvent(ID);
+            event = eventManager.getEvent(eventID);
         } catch (SQLException e) {
             Toast.makeText(context,context.getString(R.string.error_event_not_found),Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -47,7 +48,7 @@ public class NotificationPusher extends BroadcastReceiver {
             String notificationText;
             // Sets the notification
             if (event.hasSubject()) {
-                notificationTitle = event.getTypePlusSubject();
+                notificationTitle = event.chainTypePlusSubject();
                 notificationText = context.getString(R.string.event_notification_default_text);
             } else {
                 notificationTitle = event.getType().toString();
@@ -56,7 +57,7 @@ public class NotificationPusher extends BroadcastReceiver {
 
             // Create the intent that is gonna be triggered when the notification is clicked and add to the stack
             Intent notificationIntent = new Intent(context, MainActivity.class);
-            notificationIntent.putExtra(EXTRA_LONG_EVENT_ID, ID);
+            notificationIntent.putExtra(EXTRA_LONG_EVENT_ID, eventID);
 
             /** Stack Method used for Regular Activities
              TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -93,7 +94,7 @@ public class NotificationPusher extends BroadcastReceiver {
             // Build the notification and issue it
             Notification notification = nBuilder.build();
             NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            nManager.notify((int)ID, notification);
+            nManager.notify(UniqueID.getUniqueID(), notification);
         }
         else {
             Log.d("Error","Empty Extras");
@@ -101,11 +102,11 @@ public class NotificationPusher extends BroadcastReceiver {
 
     }
 
-    public static void scheduleNotification(Context context, long ID, long notificationTime) {
+    public static void scheduleNotification(Context context, String eventID, long notificationTime) {
         // Creates the intent that is gonna be triggered when the notification is clicked
         Intent intentPusher = new Intent(context, NotificationPusher.class);
         // Puts the ID of the Event to show
-        intentPusher.putExtra(context.getString(R.string.EXTRA_LONG_EVENT_ID), ID);
+        intentPusher.putExtra(context.getString(R.string.EXTRA_STRING_EVENT_ID), eventID);
         // Gets the alarm manager and set the alarm
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentPusher, 0);

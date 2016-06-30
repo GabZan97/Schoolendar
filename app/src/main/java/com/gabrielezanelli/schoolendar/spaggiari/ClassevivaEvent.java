@@ -1,4 +1,4 @@
-package com.gabrielezanelli.schoolendar;
+package com.gabrielezanelli.schoolendar.spaggiari;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

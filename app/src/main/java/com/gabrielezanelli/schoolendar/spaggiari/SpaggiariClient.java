@@ -3,13 +3,11 @@ package com.gabrielezanelli.schoolendar.spaggiari;
 import android.content.Context;
 import android.util.Log;
 
-import com.gabrielezanelli.schoolendar.ClassevivaEvent;
 import com.gabrielezanelli.schoolendar.EventManager;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,13 +20,20 @@ public class SpaggiariClient {
     private static final String loginUrl = "https://web.spaggiari.eu/home/app/default/login.php";
     private static final String agendaUrl = "https://web.spaggiari.eu/cvv/app/default/agenda_studenti.php";
 
+    private static SpaggiariClient spaggiariClient;
     private final LoopjHTTPHelper loopjHTTPHelper;
 
-    public SpaggiariClient() {
+    private SpaggiariClient() {
         this.loopjHTTPHelper = new LoopjHTTPHelper();
     }
 
-    public void login(final Context context, String schoolCode, String userCode, String password, final SpaggiariAuthStateListener listener) {
+    public static SpaggiariClient getIstance(){
+        if(spaggiariClient==null)
+            spaggiariClient = new SpaggiariClient();
+        return spaggiariClient;
+    }
+
+    public void login(String schoolCode, String userCode, String password, final SpaggiariAuthStateListener listener) {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("custcode", schoolCode);
@@ -39,26 +44,23 @@ public class SpaggiariClient {
             loopjHTTPHelper.get(new URL(loginUrl), params, new LoopjSpaggiariHelper.SpaggiariHelperResponseListener() {
                 @Override
                 public void onSuccess(String response) {
-                    listener.onLoginSuccess();
                     Log.d("Spaggiari", "Login succeeded");
-                    getEvents(context);
+                    listener.onLoginSuccess(response);
                 }
 
                 @Override
                 public void onFailure(String response) {
-                    listener.onLoginFailure();
                     Log.d("Spaggiari", "Login failed");
+                    listener.onLoginFailure(response);
                 }
             });
         } catch (MalformedURLException ex) {
-            listener.onLoginFailure();
+            listener.onLoginFailure("");
         }
     }
 
-    public void getEvents(final Context context) {
+    public void getEvents(String timeStart, String timeEnd, final SpaggiariGetEventsListener listener) {
         try {
-            String timeStart = "1464599200";
-            String timeEnd = "1465164000";
             Map<String, String> params = new HashMap<>();
             params.put("ope", "get_events");
             params.put("start", timeStart);
@@ -67,25 +69,15 @@ public class SpaggiariClient {
             loopjHTTPHelper.get(new URL(agendaUrl), params, new LoopjSpaggiariHelper.SpaggiariHelperResponseListener() {
                 @Override
                 public void onSuccess(String response) {
-                    try {
-                        Log.d("Response", response);
-                        Log.d("Spaggiari", "Events retrieve succeeded");
-
-                        Gson gson = new Gson();
-                        EventManager eventManager = EventManager.getInstance(context);
-
-                        JSONArray jsonArray = new JSONArray(response);
-
-                        for (int i = 0; i < jsonArray.length(); i++)
-                            eventManager.addClassevivaEvent((gson.fromJson(jsonArray.get(i).toString(), ClassevivaEvent.class)));
-                    } catch (JSONException | SQLException e) {
-                        e.printStackTrace();
-                    }
+                    Log.d("Spaggiari", "Events retrieve succeeded");
+                    Log.d("Spaggiari response",response);
+                    listener.onGetEventsSuccess(response);
                 }
 
                 @Override
                 public void onFailure(String response) {
                     Log.d("Spaggiari", "Events retrieve failed");
+                    listener.onGetEventsFailure(response);
                 }
             });
 
@@ -95,8 +87,14 @@ public class SpaggiariClient {
     }
 
     public interface SpaggiariAuthStateListener {
-        void onLoginSuccess();
+        void onLoginSuccess(String response);
 
-        void onLoginFailure();
+        void onLoginFailure(String response);
+    }
+
+    public interface SpaggiariGetEventsListener {
+        void onGetEventsSuccess(String response);
+
+        void onGetEventsFailure(String response);
     }
 }

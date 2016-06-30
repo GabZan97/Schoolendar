@@ -3,10 +3,14 @@
     <!-- Margins and spacings -->
     <dimen name="activity_margin">16dp</dimen>
     <dimen name="activity_margin_customized_action_bar">8dp</dimen>
-    <dimen name="event_content_margin">16dp</dimen>
-    <dimen name="event_content_bottom_margin">64dp</dimen>
+
+    <dimen name="event_content_top_margin">56dp</dimen>
+    <dimen name="event_content_bottom_margin">80dp</dimen>
+    <dimen name="event_content_horizontal_margin">32dp</dimen>
     <dimen name="event_content_spacing">8dp</dimen>
-    <dimen name="add_item_margin">50dp</dimen>
+    <dimen name="task_list_add_item_margin">16dp</dimen>
+
+    <dimen name="pager_title_margin">30dp</dimen>
     <dimen name="card_vertical_spacing">6dp</dimen>
     <dimen name="new_subject_fab_margin_end">90dp</dimen>
     <dimen name="list_margin_bottom">76dp</dimen>
@@ -14,6 +18,7 @@
     <dimen name="item_spinner_horizontal_margin">10dp</dimen>
     <dimen name="item_spinner_horizontal_little_margin">6dp</dimen>
     <dimen name="filter_top_margin">64dp</dimen>
+    <dimen name="dialog_item_spacing">8dp</dimen>
 
     <!-- Text Sizes -->
     <dimen name="big_text_size">25sp</dimen>

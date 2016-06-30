@@ -16,7 +16,7 @@ import java.util.TimeZone;
 public class TimePreference extends DialogPreference {
 
     private Calendar calendar;
-    private TimePicker picker = null;
+    private TimePicker picker;
 
     public TimePreference(Context context) {
         this(context, null);
