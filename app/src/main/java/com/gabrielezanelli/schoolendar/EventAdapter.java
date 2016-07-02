@@ -208,7 +208,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
                     extras.putString(v.getContext().getString(R.string.EXTRA_STRING_EVENT_ID), updatingEvent.getId());
                     event.setArguments(extras);
                     Log.d("All Events", "Opening event with ID: " + updatingEvent.getId());
-                    ((MainActivity) v.getContext()).fragmentTransaction(event, true, -666);
+                    ((MainActivity) v.getContext()).performFragmentTransaction(event, true);
                 }
             });
 

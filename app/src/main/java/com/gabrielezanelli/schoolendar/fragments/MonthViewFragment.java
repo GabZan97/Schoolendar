@@ -47,7 +47,7 @@ public class MonthViewFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         switch(v.getId()) {
             case (R.id.add_event_fab):
-                ((MainActivity)getActivity()).fragmentTransaction(new AddEventFragment(),true,R.id.navAddEvent);
+                ((MainActivity)getActivity()).performFragmentTransaction(new AddEventFragment(),true);
         }
     }
 
@@ -85,7 +85,7 @@ public class MonthViewFragment extends Fragment implements View.OnClickListener 
                 extras.putLong(getString(R.string.EXTRA_LONG_DAY_SELECTED),date.getCalendar().getTimeInMillis());
                 allEvents.setArguments(extras);
 
-                ((MainActivity)getActivity()).fragmentTransaction(allEvents,true,R.id.navAllEvents);
+                ((MainActivity)getActivity()).performFragmentTransaction(allEvents,true);
             }
         });
     }

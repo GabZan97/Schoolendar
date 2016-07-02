@@ -1,6 +1,8 @@
 package com.gabrielezanelli.schoolendar.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: Used in order to set image only one time, make it better
     private boolean hasImage;
+    private int UNCHECK_ITEMS = -10;
+    private int FIRST_VALID_MENU_ITEM = 0;
 
     // UI References
     private DrawerLayout drawer;
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = (CircleImageView) navView.getHeaderView(0).findViewById(R.id.image);
 
         setSupportActionBar(toolbar);
+        initFragmentManager();
         initNavDrawer();
 
         getExtraEventIdFromIntent();
@@ -108,17 +113,29 @@ public class MainActivity extends AppCompatActivity {
         Bundle extras = new Bundle();
         extras.putLong(getString(R.string.EXTRA_STRING_EVENT_ID), eventID);
         event.setArguments(extras);
-        fragmentTransaction(event, true, -666);
+        performFragmentTransaction(event, true);
     }
 
     public void unsetUserImage() {
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.user_default_image));
     }
 
-    // Nav item > -1 is valid
-    // Nav item = -1 does nothing because it has already being set
-    // Nav item < -1 un-check all items
-    public void fragmentTransaction(Fragment fragment, boolean addToBackStack, int navItem) {
+    public int getNavIdFromFragment(Fragment fragment) {
+        Class fragmentClass = fragment.getClass();
+        if(fragmentClass.equals(AddEventFragment.class))
+            return R.id.navAddEvent;
+        if(fragmentClass.equals(ListViewFragment.class))
+            return R.id.navListView;
+        if(fragmentClass.equals(MonthViewFragment.class))
+            return R.id.navMonthView;
+        if(fragmentClass.equals(ManageSubjectsFragment.class))
+            return R.id.navManageSubjects;
+        if(fragmentClass.equals(SignInFragment.class) || fragmentClass.equals(AccountPreferencesFragment.class))
+            return R.id.navAccount;
+        return UNCHECK_ITEMS;
+    }
+
+    public void performFragmentTransaction(Fragment fragment, boolean addToBackStack) {
         nextFragment = fragment;
 
         // Retrieve the current fragment
@@ -126,20 +143,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if an item was selected
         if (nextFragment == null) {
-            Log.d("Fragment update", "Any item was selected");
+            Log.d("Fragment Manager", "Any item was selected");
             return;
         }
 
         // Check if the user selected the current item
         if (currentFragment != null) {
             if (currentFragment.getClass().equals(nextFragment.getClass())) {
-                Log.d("Fragment update", "This item is already selected");
+                Log.d("Fragment Manager", "This item is already selected");
                 nextFragment = null;
                 return;
             }
         }
 
-        android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction()
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.animator.slide_in_from_left, R.animator.slide_out_to_right,
                         R.animator.slide_out_to_right, R.animator.slide_in_from_left)
                 .replace(R.id.fragment_container, nextFragment);
@@ -147,19 +164,36 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
+        getFragmentManager().executePendingTransactions();
+        Log.d("Fragment Manager", "Updated");
 
-        // TODO: Add a listener somewhere in order to check the right item on nav view when popping fragment stack
+        nextFragment = null;
 
-        if (navItem > -1)
+        refreshCheckedMenuItem();
+    }
+
+    private void refreshCheckedMenuItem() {
+        Fragment currentFragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+        int navItem = getNavIdFromFragment(currentFragment);
+
+        if (navItem >= FIRST_VALID_MENU_ITEM)
             navView.setCheckedItem(navItem);
-        else if (navItem < -1) {
+        else if (navItem == UNCHECK_ITEMS) {
             // Deselect items
             navView.setCheckedItem(0);
             navView.getMenu().getItem(0).setChecked(false);
         }
 
-        Log.d("Fragment update", "Updated");
-        nextFragment = null;
+    }
+
+
+    private void initFragmentManager() {
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                refreshCheckedMenuItem();
+            }
+        });
     }
 
     private void initNavDrawer() {
@@ -170,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 if (slideOffset > 0) {
+                    // TODO: Set this changes just when the user gets updated, not every time the drawer opens
                     // The drawer started opening
                    // Log.d("Drawer", "User logged: "+FirebaseUser.isLogged()+" anonym: "+FirebaseUser.isAnonymous());
                     if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
@@ -191,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
             // Waits until the drawer is closed for replacing fragment
             @Override
             public void onDrawerClosed(View drawerView) {
-                fragmentTransaction(nextFragment, true, -1);
+                performFragmentTransaction(nextFragment, true);
                 super.onDrawerClosed(drawerView);
             }
         };
@@ -212,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navManageSubjects:
                         nextFragment = new ManageSubjectsFragment();
                         break;
-                    case R.id.navAllEvents:
+                    case R.id.navListView:
                         nextFragment = new ListViewFragment();
                         break;
                     case R.id.navAccount:
@@ -231,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        fragmentTransaction(new MonthViewFragment(), true, R.id.navMonthView);
+        performFragmentTransaction(new MonthViewFragment(), true);
     }
 
 }

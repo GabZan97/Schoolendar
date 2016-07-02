@@ -35,7 +35,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.gabrielezanelli.schoolendar.EventManager;
 import com.gabrielezanelli.schoolendar.FirebaseUser;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
@@ -54,7 +53,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -224,7 +222,7 @@ public class SignInFragment extends Fragment implements LoaderManager.LoaderCall
         showProgress(false);
         Toast.makeText(getActivity(), R.string.toast_login_successful, Toast.LENGTH_SHORT).show();
         AccountPreferencesFragment account = new AccountPreferencesFragment();
-        ((MainActivity) getActivity()).fragmentTransaction(account, false, R.id.navAccount);
+        ((MainActivity) getActivity()).performFragmentTransaction(account, false);
     }
 
     private void initLoginForm() {

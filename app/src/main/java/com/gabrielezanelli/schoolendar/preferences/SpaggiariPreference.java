@@ -63,13 +63,9 @@ public class SpaggiariPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
 
-            final String schoolCode = "BSIT0006";
-            final String userCode = "S828535F";
-            final String password = "Gabriele97";
-
-            //schoolCodeText.getText().toString();
-            //userCodeText.getText().toString();
-            //passwordText.getText().toString();
+            final String schoolCode = schoolCodeText.getText().toString();
+            final String userCode = userCodeText.getText().toString();
+            final String password = passwordText.getText().toString();
 
             SpaggiariClient.getIstance().login(schoolCode, userCode, password,
                     new SpaggiariClient.SpaggiariAuthStateListener() {

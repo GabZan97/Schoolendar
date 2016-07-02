@@ -207,7 +207,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
 
                 FirebaseAuth.getInstance().signOut();
                 ((MainActivity)getActivity()).unsetUserImage();
-                ((MainActivity)getActivity()).fragmentTransaction(new SignInFragment(),false,R.id.navAccount);
+                ((MainActivity)getActivity()).performFragmentTransaction(new SignInFragment(),false);
                 return true;
             }
         } );

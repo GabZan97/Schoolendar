@@ -254,7 +254,7 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
 
             // Confirm event add
             case (R.id.add_button):
-                if(!checkFields())
+                if(!checkFieldsAndGetValues())
                     break;
                     try {
                         // Get the Event Manager
@@ -302,11 +302,11 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
 
             // Manage Subjects FAB
             case (R.id.manage_subjects_button):
-                ((MainActivity)getActivity()).fragmentTransaction(new ManageSubjectsFragment(),true,R.id.navManageSubjects);
+                ((MainActivity)getActivity()).performFragmentTransaction(new ManageSubjectsFragment(),true);
         }
     }
 
-    private boolean checkFields() {
+    private boolean checkFieldsAndGetValues() {
         // Check and get title
         title = "";
         if (!eventTitleEdit.getText().toString().equals("") && eventTitleEdit.getText() != null)
