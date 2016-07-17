@@ -1,11 +1,12 @@
 package com.gabrielezanelli.schoolendar.calendardecorators;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 
-import com.gabrielezanelli.schoolendar.Event;
-import com.gabrielezanelli.schoolendar.EventManager;
+import com.gabrielezanelli.schoolendar.R;
+import com.gabrielezanelli.schoolendar.StoreManager;
+import com.gabrielezanelli.schoolendar.database.Event;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -17,25 +18,29 @@ import java.util.TimeZone;
 
 
 public class EventDecorator implements DayViewDecorator {
-    private EventManager eventManager;
+    private StoreManager storeManager;
     private Calendar date;
-    private List<Event.eventType> eventTypes;
-    private int color = Color.RED;
+    private List<Event.EventType> eventTypes;
+    private int color;
 
     public EventDecorator(Context context) {
         date = Calendar.getInstance(TimeZone.getDefault());
-        eventManager = EventManager.getInstance(context);
+        storeManager = StoreManager.getInstance();
         // TODO: Add a preference for the color and get it from default shared preferences
-        //color = context.getSharedPreferences()
+        color = PreferenceManager.getDefaultSharedPreferences(context).
+                getInt(context.getString(R.string.pref_key_event_highlight_color),Color.RED);
     }
 
     @Override
     public boolean shouldDecorate(CalendarDay day) {
+        //return false;
         date.setTimeInMillis(day.getDate().getTime());
-        eventTypes = eventManager.getEventTypesInDate(date);
+       /** eventTypes = storeManager.getEventTypesInDate(date);
         if(eventTypes.isEmpty())
             return false;
         return true;
+        */
+        return storeManager.areThereEventsInDate(date);
     }
 
     @Override

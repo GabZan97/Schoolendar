@@ -47,7 +47,7 @@
             tools:replace="android:theme" />
 
         <!-- BroadcastReceiver of notifications -->
-        <receiver android:name=".NotificationPusher">
+        <receiver android:name=".NotificationManager">
             <intent-filter>
                 <action android:name="android.media.action.DISPLAY_NOTIFICATION" />
 

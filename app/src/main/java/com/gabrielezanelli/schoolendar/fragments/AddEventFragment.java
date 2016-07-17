@@ -23,36 +23,32 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.gabrielezanelli.schoolendar.Event;
-import com.gabrielezanelli.schoolendar.EventManager;
-import com.gabrielezanelli.schoolendar.FirebaseUser;
-import com.gabrielezanelli.schoolendar.NotificationPusher;
+import com.gabrielezanelli.schoolendar.NotificationManager;
 import com.gabrielezanelli.schoolendar.R;
+import com.gabrielezanelli.schoolendar.StoreManager;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
+import com.gabrielezanelli.schoolendar.adapters.SubjectSpinnerAdapter;
+import com.gabrielezanelli.schoolendar.database.Event;
+import com.gabrielezanelli.schoolendar.database.Subject;
 
 import org.apache.commons.lang.WordUtils;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 public class AddEventFragment extends Fragment implements View.OnClickListener {
 
+    private StoreManager storeManager;
     private String dateFormat;
     private String dateTimeFormat;
 
-    private String title;
-    private String description;
-    private Event.eventType eventType;
-    private String eventSubject;
-    private long date;
-
-    private EventManager eventManager;
     private Calendar displayedCalendar;
     private Calendar eventDate;
     private Calendar notificationDate;
+
+    private SubjectSpinnerAdapter eventSubjectAdapter;
 
     // UI References
     private EditText eventTitleEdit;
@@ -75,6 +71,8 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         getActivity().setTitle(getString(R.string.fragment_title_add_event));
+
+        storeManager = StoreManager.getInstance();
 
         dateFormat = getString(R.string.long_date_format);
         dateTimeFormat = getString(R.string.full_date_time_format);
@@ -136,14 +134,9 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
                 (getActivity(), R.array.event_types, R.layout.item_spinner_type);
         eventTypeSpinner.setAdapter(eventTypeAdapter);
 
-        // Inflates the Dynamic Subjects retrieving data from Firebase Database
-        final FirebaseListAdapter<String> eventSubjectAdapter = new FirebaseListAdapter<String>
-                (getActivity(), String.class, R.layout.item_spinner_subject, FirebaseUser.getSubjectsRef()) {
-            @Override
-            protected void populateView(View v, String subject, int position) {
-                ((TextView) v).setText(subject);
-            }
-        };
+        // Inflates the Event Subjects in the spinner retrieving data from Database
+        List<Subject> subjects = storeManager.getSubjects();
+        eventSubjectAdapter = new SubjectSpinnerAdapter(getActivity(),R.layout.item_spinner_subject,subjects);
         eventSubjectSpinner.setAdapter(eventSubjectAdapter);
 
         // Checks what is selected as event type and enables on disables the subject spinner when needed
@@ -151,9 +144,9 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    Event.eventType eventType = Event.eventType.valueOf((String) eventTypeSpinner.getSelectedItem());
+                    Event.EventType eventType = Event.EventType.valueOf((String) eventTypeSpinner.getSelectedItem());
                     TextView subjectText = (TextView)eventSubjectSpinner.findViewById(R.id.spinner_subject_text);
-                    if (eventType == Event.eventType.Communication || eventType == Event.eventType.Note) {
+                    if (eventType == Event.EventType.Communication || eventType == Event.EventType.Note) {
                         eventSubjectSpinner.setEnabled(false);
                         if(subjectText !=null)
                             subjectText.setVisibility(View.GONE);
@@ -254,40 +247,29 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
 
             // Confirm event add
             case (R.id.add_button):
-                if(!checkFieldsAndGetValues())
+                if(!checkFields())
                     break;
                     try {
-                        // Get the Event Manager
-                        eventManager = EventManager.getInstance(getActivity());
-                        Event newEvent;
+                        String title = eventTitleEdit.getText().toString();
+                        String description= eventDescriptionEdit.getText().toString();
+                        Event.EventType type= Event.EventType.valueOf(eventTypeSpinner.getSelectedItem().toString());
+                        long date = eventDate.getTimeInMillis();
 
-                        // Use different constructors depending on subject and notification presence
-                        if (notificationDate != null) {
-                            if (eventSubjectSpinner.isEnabled())
-                                newEvent = new Event(title, description, eventType, date, eventSubject, notificationDate.getTimeInMillis());
-                            else
-                                newEvent = new Event(title, description, eventType, date, notificationDate.getTimeInMillis());
-                        } else {
-                            if (eventSubjectSpinner.isEnabled())
-                                newEvent = new Event(title, description, eventType, date, eventSubject);
-                            else
-                                newEvent = new Event(title, description, eventType, date);
-                        }
+                        Event newEvent = new Event(title, description, type, date);
+                        if (notificationDate != null)
+                            newEvent.setNotificationDate(notificationDate.getTimeInMillis());
+                        if(eventSubjectSpinner.isEnabled())
+                            newEvent.setSubject(eventSubjectAdapter.getSubjectByPosition(eventSubjectSpinner.getSelectedItemPosition()));
 
-                        // Saves the Event in Firebase Database
-                        // and gets the ID after it was generated by Firebase push()
-                        newEvent = FirebaseUser.addEvent(newEvent);
-
-                        // Saves the Event in the Database
-                        eventManager.addEvent(newEvent);
+                        storeManager.addEvent(newEvent);
 
                         // If the Event has a notification, schedules it
                         if (newEvent.hasNotification())
-                            NotificationPusher.scheduleNotification(getActivity(), newEvent.getId(), newEvent.getNotificationDate());
+                            NotificationManager.scheduleNotification(getActivity(), newEvent.getId(), newEvent.getNotificationDate());
 
                         Toast.makeText(getActivity(), R.string.toast_event_add_succeeded, Toast.LENGTH_SHORT).show();
 
-                    } catch (SQLException | NullPointerException ex) {
+                    } catch (NullPointerException ex) {
                         ex.printStackTrace();
                         Toast.makeText(getActivity(), R.string.toast_event_add_failed, Toast.LENGTH_SHORT).show();
                     } finally {
@@ -306,41 +288,24 @@ public class AddEventFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private boolean checkFieldsAndGetValues() {
-        // Check and get title
-        title = "";
-        if (!eventTitleEdit.getText().toString().equals("") && eventTitleEdit.getText() != null)
-            title = eventTitleEdit.getText().toString();
-        else {
+    private boolean checkFields() {
+        // Check title
+        if (eventTitleEdit.getText() == null || eventTitleEdit.getText().toString().equals("")) {
             eventTitleEdit.setError(getString(R.string.error_missing_title));
             eventTitleEdit.requestFocus();
             return false;
         }
 
-        // Check and get description
-        description = "";
-        if (eventDescriptionEdit.getText() != null)
-            description = eventDescriptionEdit.getText().toString();
-
-        // Doesn't check the event type because has "Homework" it as default value
-        eventType = Event.eventType.valueOf(eventTypeSpinner.getSelectedItem().toString());
-
-        // Check and get subject
-        eventSubject = null;
+        // Check subject
         if (eventSubjectSpinner.isEnabled()) {
-            if (eventSubjectSpinner.getSelectedItem() != null)
-                eventSubject = eventSubjectSpinner.getSelectedItem().toString();
-            else {
+            if (eventSubjectSpinner.getSelectedItem() == null) {
                 Toast.makeText(getActivity(), R.string.error_missing_subject, Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
 
         // Check if the event has a date
-        date = 0;
-        if (eventDate != null)
-            date = eventDate.getTimeInMillis();
-        else {
+        if (eventDate == null) {
             Toast.makeText(getActivity(), R.string.error_missing_date, Toast.LENGTH_SHORT).show();
             return false;
         }

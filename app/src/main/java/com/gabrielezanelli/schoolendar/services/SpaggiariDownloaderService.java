@@ -1,12 +1,11 @@
 package com.gabrielezanelli.schoolendar.services;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.gabrielezanelli.schoolendar.EventManager;
+import com.gabrielezanelli.schoolendar.StoreManager;
 import com.gabrielezanelli.schoolendar.spaggiari.ClassevivaEvent;
 import com.gabrielezanelli.schoolendar.spaggiari.SpaggiariClient;
 import com.google.gson.Gson;
@@ -14,16 +13,13 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.sql.SQLException;
-import java.util.Calendar;
-
 public class SpaggiariDownloaderService extends Service {
-    private EventManager eventManager;
+    private StoreManager storeManager;
     private String timeStart = "0";
     private String timeEnd = ""+(System.currentTimeMillis()/1000);
 
-    public SpaggiariDownloaderService(Context context) {
-        eventManager = EventManager.getInstance(context);
+    public SpaggiariDownloaderService() {
+        storeManager = StoreManager.getInstance();
 
         SpaggiariClient.getIstance().getEvents(timeStart, timeEnd, new SpaggiariClient.SpaggiariGetEventsListener() {
             @Override
@@ -36,9 +32,10 @@ public class SpaggiariDownloaderService extends Service {
 
                     JSONArray jsonArray = new JSONArray(response);
 
-                    for (int i = 0; i < jsonArray.length(); i++)
-                        eventManager.addClassevivaEvent((gson.fromJson(jsonArray.get(i).toString(), ClassevivaEvent.class)));
-                } catch (JSONException | SQLException e) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        storeManager.addClassevivaEvent(gson.fromJson(jsonArray.get(i).toString(), ClassevivaEvent.class));
+                    }
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }

@@ -1,17 +1,9 @@
 package com.gabrielezanelli.schoolendar.spaggiari;
 
-import android.content.Context;
 import android.util.Log;
-
-import com.gabrielezanelli.schoolendar.EventManager;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.FirebaseHelper;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.services.SpaggiariDownloaderService;
 import com.gabrielezanelli.schoolendar.spaggiari.SpaggiariClient;
@@ -51,7 +51,7 @@ public class SpaggiariPreference extends DialogPreference {
         SpaggiariCredentials emptyCredentials = new SpaggiariCredentials("", "", "");
         if (restorePersistedValue) {
             spaggiariCredentials = new Gson().fromJson(getPersistedString(new Gson().toJson(emptyCredentials)), SpaggiariCredentials.class);
-            FirebaseUser.setSpaggiariCredentials(spaggiariCredentials);
+            FirebaseHelper.setSpaggiariCredentials(spaggiariCredentials);
         }
         else
             spaggiariCredentials = emptyCredentials;
@@ -75,7 +75,7 @@ public class SpaggiariPreference extends DialogPreference {
                             SpaggiariCredentials spaggiariCredentials = new SpaggiariCredentials(schoolCode, userCode, password);
                             Log.d("Gson credentials", new Gson().toJson(spaggiariCredentials));
                             persistString(new Gson().toJson(spaggiariCredentials));
-                            new SpaggiariDownloaderService(getContext());
+                            new SpaggiariDownloaderService();
                         }
 
                         @Override

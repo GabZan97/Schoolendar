@@ -2,34 +2,32 @@ package com.gabrielezanelli.schoolendar.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.StoreManager;
 import com.gabrielezanelli.schoolendar.R;
-import com.gabrielezanelli.schoolendar.Task;
+import com.gabrielezanelli.schoolendar.adapters.TaskAdapter;
+import com.gabrielezanelli.schoolendar.database.Task;
 
 public class EventTasksSubFragment extends Fragment {
 
     // UI References
-    private FirebaseRecyclerAdapter<Task, TaskHolder> taskAdapter;
     private RecyclerView recyclerView;
+    private TaskAdapter taskAdapter;
     private LinearLayout footerViewRecycler;
     private EditText newTaskText;
+    private CheckBox taskCheckbox;
 
     @Nullable
     @Override
@@ -39,7 +37,10 @@ public class EventTasksSubFragment extends Fragment {
         recyclerView = (RecyclerView) thisFragment.findViewById(R.id.tasks_recycler_view);
         footerViewRecycler = (LinearLayout) thisFragment.findViewById(R.id.recycler_footer);
         newTaskText = (EditText) footerViewRecycler.findViewById(R.id.task_edit_text);
+        taskCheckbox = (CheckBox) footerViewRecycler.findViewById(R.id.task_checkbox);
+
         initTaskList();
+        initAddTaskListener();
 
         return thisFragment;
     }
@@ -49,17 +50,15 @@ public class EventTasksSubFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
-        taskAdapter = new FirebaseRecyclerAdapter<Task, TaskHolder>
-                (Task.class, R.layout.item_task, TaskHolder.class, FirebaseUser.getTasksRef(EventFragment.getSelectedEventID())) {
-            @Override
-            protected void populateViewHolder(TaskHolder viewHolder, Task task, int position) {
-                viewHolder.taskText.setText(task.getText());
-                viewHolder.taskCheckbox.setChecked(task.isCompleted());
-            }
-        };
+        taskAdapter = new TaskAdapter(StoreManager.getInstance().getEventTasks(EventFragment.getSelectedEvent()));
+
         recyclerView.setAdapter(taskAdapter);
 
-        final CheckBox taskCheckbox = (CheckBox)footerViewRecycler.findViewById(R.id.task_checkbox);
+
+
+
+    }
+    private void initAddTaskListener() {
         newTaskText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView taskText, int actionId, KeyEvent event) {
@@ -69,10 +68,12 @@ public class EventTasksSubFragment extends Fragment {
                         // If shift key is pressed, the user just want to insert '\n',
                         // otherwise the default action is to submit the text
                         if (!event.isShiftPressed()) {
-                            FirebaseUser.addTask(EventFragment.getSelectedEventID(),new Task(taskText.getText().toString(),taskCheckbox.isChecked()));
+                            taskAdapter.addTask(new Task(EventFragment.getSelectedEvent(),
+                                    taskText.getText().toString(), taskCheckbox.isChecked()));
+
+                            // Clear fields
                             taskText.setText("");
                             taskCheckbox.setChecked(false);
-                            taskAdapter.notifyDataSetChanged();
                             return true;
                         }
                     }
@@ -80,51 +81,5 @@ public class EventTasksSubFragment extends Fragment {
                 return false;
             }
         });
-
-        // TODO: Fix recycler view not showing any elements at start, this doesn't notify it
-
-    }
-
-    static class TaskHolder extends RecyclerView.ViewHolder {
-        private EditText taskText;
-        private CheckBox taskCheckbox;
-        private FloatingActionButton deleteTaskButton;
-
-        public TaskHolder(View itemView) {
-            super(itemView);
-            taskText = (EditText) itemView.findViewById(R.id.task_edit_text);
-            taskCheckbox = (CheckBox) itemView.findViewById(R.id.task_checkbox);
-
-
-            taskCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    FirebaseUser.updateTaskComplete(EventFragment.getSelectedEventID(),new Task(taskText.getText().toString(),isChecked));
-                }
-            });
-
-
-            deleteTaskButton = (FloatingActionButton) itemView.findViewById(R.id.delete_task_fab);
-            deleteTaskButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FirebaseUser.removeTask(EventFragment.getSelectedEventID(),taskText.getText().toString());
-                }
-            });
-
-            taskText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if(hasFocus){
-                        deleteTaskButton.setVisibility(View.VISIBLE);
-                    }else {
-                        deleteTaskButton.setVisibility(View.GONE);
-                        // TODO: Update task text
-                    }
-                }
-            });
-
-        }
-
     }
 }

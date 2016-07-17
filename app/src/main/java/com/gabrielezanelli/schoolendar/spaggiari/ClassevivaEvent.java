@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class ClassevivaEvent {
+
+    // These dumb names are for Gson that needs the same Json attributes' names given by Spaggiari
+    private String id;
     private String autore_desc;
     private String data_inserimento;
     private String end;
@@ -13,10 +16,12 @@ public class ClassevivaEvent {
     private String tipo;
     private String title;
 
-    // These dumb methods' names are for Gson that needs the same Json attributes' names given by Spaggiari
 
+    // Get Methods [START]
+    public String getId() {
+        return id;
+    }
 
-    // Normal get methods
     public String getAuthor() {
         return autore_desc;
     }
@@ -55,5 +60,5 @@ public class ClassevivaEvent {
     public String getTitle() {
         return title;
     }
-
+    // Get Methods [END]
 }

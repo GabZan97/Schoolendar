@@ -2,7 +2,6 @@ package com.gabrielezanelli.schoolendar;
 
 import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,54 +9,47 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
+import com.gabrielezanelli.schoolendar.database.Event;
 
-import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.content.Context.ALARM_SERVICE;
 
-public class NotificationPusher extends BroadcastReceiver {
-    private static String EXTRA_LONG_EVENT_ID;
+public class NotificationManager extends BroadcastReceiver {
+    private static String TAG_NOTIFICATION_MANAGER = "Notification Manager";
 
     @Override
     public void onReceive(Context context, Intent workIntent) {
-
+        String EXTRA_STRING_EVENT_ID = context.getString(R.string.EXTRA_STRING_EVENT_ID);
         // Gets the event from the database using the ID received in the intent
-        String eventID = workIntent.getStringExtra(context.getString(R.string.EXTRA_STRING_EVENT_ID));
+        String eventID = workIntent.getStringExtra(EXTRA_STRING_EVENT_ID);
         //int notificationID = workIntent.getIntExtra(context.getString(R.string.EXTRA_INT_NOTIFICATION_ID),-1);
 
-        // TODO get the notification id atomic
-        Log.d("ID Pusher","ID: "+ eventID);
+        Log.d(TAG_NOTIFICATION_MANAGER,"Event ID: "+ eventID);
 
-        EventManager eventManager = EventManager.getInstance(context);
-        Event event = null;
-        try {
-            event = eventManager.getEvent(eventID);
-        } catch (SQLException e) {
-            Toast.makeText(context,context.getString(R.string.error_event_not_found),Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        StoreManager storeManager = StoreManager.getInstance();
+        Event event = storeManager.getEvent(eventID);
 
         if (event != null) {
             String notificationTitle;
             String notificationText;
             // Sets the notification
             if (event.hasSubject()) {
-                notificationTitle = event.chainTypePlusSubject();
+                notificationTitle = event.chainTypeSubject();
                 notificationText = context.getString(R.string.event_notification_default_text);
             } else {
-                notificationTitle = event.getType().toString();
+                notificationTitle = event.getType();
                 notificationText = event.getTitle();
             }
 
             // Create the intent that is gonna be triggered when the notification is clicked and add to the stack
             Intent notificationIntent = new Intent(context, MainActivity.class);
-            notificationIntent.putExtra(EXTRA_LONG_EVENT_ID, eventID);
+            notificationIntent.putExtra(EXTRA_STRING_EVENT_ID, eventID);
 
             /** Stack Method used for Regular Activities
              TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -93,18 +85,18 @@ public class NotificationPusher extends BroadcastReceiver {
 
             // Build the notification and issue it
             Notification notification = nBuilder.build();
-            NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            android.app.NotificationManager nManager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(UniqueID.getUniqueID(), notification);
         }
         else {
-            Log.d("Error","Empty Extras");
+            Log.d(TAG_NOTIFICATION_MANAGER,"Empty Extras");
         }
 
     }
 
     public static void scheduleNotification(Context context, String eventID, long notificationTime) {
         // Creates the intent that is gonna be triggered when the notification is clicked
-        Intent intentPusher = new Intent(context, NotificationPusher.class);
+        Intent intentPusher = new Intent(context, NotificationManager.class);
         // Puts the ID of the Event to show
         intentPusher.putExtra(context.getString(R.string.EXTRA_STRING_EVENT_ID), eventID);
         // Gets the alarm manager and set the alarm
@@ -112,7 +104,7 @@ public class NotificationPusher extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentPusher, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
 
-        Log.d("Notification Pusher","Scheduled");
+        Log.d(TAG_NOTIFICATION_MANAGER,"Notification scheduled");
     }
 
     public static class UniqueID {

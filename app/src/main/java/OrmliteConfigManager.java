@@ -1,4 +1,6 @@
-import com.gabrielezanelli.schoolendar.Event;
+import com.gabrielezanelli.schoolendar.database.Event;
+import com.gabrielezanelli.schoolendar.database.Subject;
+import com.gabrielezanelli.schoolendar.database.Task;
 import com.j256.ormlite.android.apptools.OrmLiteConfigUtil;
 
 import java.io.File;
@@ -16,7 +18,7 @@ public class OrmliteConfigManager extends OrmLiteConfigUtil {
     /**
      * classes represents the models to use for generating the ormlite_config.txt file
      */
-    private static final Class<?>[] classes = new Class[] {Event.class};
+    private static final Class<?>[] classes = new Class[] {Event.class,Subject.class,Task.class};
 
     /**
      * Given that this is a separate program from the android app, we have to use

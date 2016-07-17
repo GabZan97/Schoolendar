@@ -19,7 +19,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.FirebaseHelper;
+import com.gabrielezanelli.schoolendar.StoreManager;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.fragments.AccountPreferencesFragment;
 import com.gabrielezanelli.schoolendar.fragments.AddEventFragment;
@@ -48,10 +49,15 @@ public class MainActivity extends AppCompatActivity {
     private CircleImageView imageView;
     private Fragment nextFragment;
 
+    // TODO: Store notification ID and delete them when events are deleted
+    // TODO: Delete unwanted Classeviva Events easily ( to define, really )
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize StoreManager object
+        StoreManager.initialize(this);
 
         // This is suppose to initialize some nice facebook feature
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -60,11 +66,6 @@ public class MainActivity extends AppCompatActivity {
         // The boolean "false" ensure that this is called just once ever
         PreferenceManager.setDefaultValues(this, R.xml.account_preferences, false);
 
-        // Initialize FirebaseUser
-        FirebaseUser.init(this);
-        hasImage = false;
-
-        initAuthenticationService();
 
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -74,10 +75,15 @@ public class MainActivity extends AppCompatActivity {
         imageView = (CircleImageView) navView.getHeaderView(0).findViewById(R.id.image);
 
         setSupportActionBar(toolbar);
+
+        hasImage = false;
+        initAuthenticationService();
         initFragmentManager();
         initNavDrawer();
 
-        getExtraEventIdFromIntent();
+        checkForEventTriggered();
+
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -87,24 +93,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    // Sets up the Option Menu behavior
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Called whenever an item is selected
-        return super.onOptionsItemSelected(item);
-    }
-
     private void initAuthenticationService() {
         startService(new Intent(this, AuthStateService.class));
     }
 
-    private void getExtraEventIdFromIntent() {
+    private void checkForEventTriggered() {
         long eventID = getIntent().getLongExtra(getString(R.string.EXTRA_STRING_EVENT_ID), -1);
         if (eventID == -1)
             return;
@@ -156,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // TODO: Set animation on popback, but it fucks up views, dunno why
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_from_left, R.animator.slide_out_to_right,
-                        R.animator.slide_out_to_right, R.animator.slide_in_from_left)
+                .setCustomAnimations(R.animator.slide_in_from_left, R.animator.slide_out_to_right)
                 .replace(R.id.fragment_container, nextFragment);
         if (addToBackStack)
             fragmentTransaction.addToBackStack(null);
@@ -206,14 +199,14 @@ public class MainActivity extends AppCompatActivity {
                 if (slideOffset > 0) {
                     // TODO: Set this changes just when the user gets updated, not every time the drawer opens
                     // The drawer started opening
-                   // Log.d("Drawer", "User logged: "+FirebaseUser.isLogged()+" anonym: "+FirebaseUser.isAnonymous());
-                    if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
-                        usernameText.setText(getString(R.string.message_welcome_user, FirebaseUser.getUsername()));
-                        emailText.setText(FirebaseUser.getEmail());
-                        if (!hasImage && FirebaseUser.getImage() != null) {
+                   // Log.d("Drawer", "User logged: "+FirebaseHelper.isLogged()+" anonym: "+FirebaseHelper.isAnonymous());
+                    if (FirebaseHelper.isLogged() && !FirebaseHelper.isAnonymous()) {
+                        usernameText.setText(getString(R.string.message_welcome_user, FirebaseHelper.getUsername()));
+                        emailText.setText(FirebaseHelper.getEmail());
+                        if (!hasImage && FirebaseHelper.getImage() != null) {
                             Log.d("Image", "Setting from URI");
                             hasImage = true;
-                            imageView.setImageBitmap(FirebaseUser.getImage());
+                            imageView.setImageBitmap(FirebaseHelper.getImage());
                         }
                     } else {
                         usernameText.setText(getString(R.string.message_welcome_user, getString(R.string.pref_default_username)));
@@ -251,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         nextFragment = new ListViewFragment();
                         break;
                     case R.id.navAccount:
-                        if (FirebaseUser.isLogged() && !FirebaseUser.isAnonymous()) {
+                        if (FirebaseHelper.isLogged() && !FirebaseHelper.isAnonymous()) {
                             nextFragment = new AccountPreferencesFragment();
                         } else {
                             nextFragment = new SignInFragment();

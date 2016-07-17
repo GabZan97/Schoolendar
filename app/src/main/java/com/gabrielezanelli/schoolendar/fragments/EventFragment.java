@@ -13,25 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.gabrielezanelli.schoolendar.EventManager;
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.StoreManager;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
+import com.gabrielezanelli.schoolendar.database.Event;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class EventFragment extends Fragment implements View.OnClickListener {
 
-    private static String eventID;
+    private static Event selectedEvent;
 
     // UI References
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton editButton;
     private FloatingActionButton deleteButton;
+    private static String TAG_EVENT_FRAGMENT = "Event Fragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         tabLayout = (TabLayout) thisFragment.findViewById(R.id.tabs);
 
         // TODO: Fix Pager not initializing pages after the first time.
-        if (getEventIDFromArgs()) {
+        if (getSelectedEventFromArgs()) {
             getActivity().setTitle(getString(R.string.fragment_title_event));
         } else
             getActivity().setTitle(getString(R.string.fragment_title_event_not_found));
@@ -60,50 +60,24 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         return thisFragment;
     }
 
-    private void initPager () {
-        Log.d("Init pager","Initializing things");
-        PagerAdapter pagerAdapter = new PagerAdapter(((MainActivity)getActivity()).getSupportFragmentManager());
-        pagerAdapter.addFragment(new EventInformationSubFragment(),getString(R.string.fragment_title_event_information));
-        pagerAdapter.addFragment(new EventTasksSubFragment(),getString(R.string.fragment_title_event_tasks));
+    private void initPager() {
+        Log.d(TAG_EVENT_FRAGMENT, "Initializing pager");
+
+        PagerAdapter pagerAdapter = new PagerAdapter(((MainActivity) getActivity()).getSupportFragmentManager());
+        pagerAdapter.addFragment(new EventInformationSubFragment(), getString(R.string.fragment_title_event_information));
+        pagerAdapter.addFragment(new EventTasksSubFragment(), getString(R.string.fragment_title_event_tasks));
+
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-
-        //pagerTitle.setViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            // This method will be invoked when a new page becomes selected.
-            @Override
-            public void onPageSelected(int position) {
-                Log.d("Pager.onPageSelected","Page selected "+position);
-            }
-
-            // This method will be invoked when the current page is scrolled
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            // Called when the scroll state changes:
-            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case (R.id.delete_event_fab):
-                try {
-                    EventManager.getInstance(getActivity()).deleteEvent(eventID);
-                    FirebaseUser.removeEvent(eventID);
-                    getFragmentManager().popBackStack();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                StoreManager.getInstance().deleteEvent(selectedEvent);
+                getFragmentManager().popBackStack();
+
                 break;
             case (R.id.edit_event_fab):
 
@@ -111,20 +85,23 @@ public class EventFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private boolean getEventIDFromArgs() {
-        // Gets the ID of the triggered event
-        eventID = getArguments().getString(getString(R.string.EXTRA_STRING_EVENT_ID), "");
+    private boolean getSelectedEventFromArgs() {
+        // Gets the ID of the triggered selectedEvent
+        String eventId = getArguments().getString(getString(R.string.EXTRA_STRING_EVENT_ID), "");
 
-        if (eventID.equals("")) {
-            Log.d("Event", "Error while retrieving  Event ID from Args");
+        if (eventId.equals("")) {
+            Log.d(TAG_EVENT_FRAGMENT, "Error while retrieving Event ID from Args");
             return false;
         }
+        selectedEvent = StoreManager.getInstance().getEvent(eventId);
+        Log.d(TAG_EVENT_FRAGMENT, "Event retrieved");
         return true;
     }
 
-    public static String getSelectedEventID() {
-        return eventID;
+    public static Event getSelectedEvent() {
+        return selectedEvent;
     }
+
 
     public static class PagerAdapter extends FragmentPagerAdapter {
         private final List<android.support.v4.app.Fragment> fragmentsList = new ArrayList<>();
@@ -154,7 +131,6 @@ public class EventFragment extends Fragment implements View.OnClickListener {
             return fragmentsTitleList.get(position);
         }
     }
-
 
 
 }

@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.FirebaseHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -53,14 +53,14 @@ public class AuthStateService extends Service {
             public synchronized void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 com.google.firebase.auth.FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
-                    // FirebaseUser is signed in
+                    // FirebaseHelper is signed in
                     Log.d("AuthState Service", "onAuthStateChanged: User signed in: " + currentUser.getUid());
-                    FirebaseUser.updateUser(currentUser);
+                    FirebaseHelper.updateUser(currentUser);
 
                 } else {
-                    // FirebaseUser is signed out
+                    // FirebaseHelper is signed out
                     Log.d("AuthState Service", "onAuthStateChanged: User signed out");
-                    FirebaseUser.clearUser();
+                    FirebaseHelper.clearUser();
 
                     // Sign in Anonymously
                     firebaseAuth.signInAnonymously()

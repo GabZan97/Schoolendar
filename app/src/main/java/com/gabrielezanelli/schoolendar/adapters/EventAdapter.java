@@ -1,4 +1,4 @@
-package com.gabrielezanelli.schoolendar;
+package com.gabrielezanelli.schoolendar.adapters;
 
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
+import com.gabrielezanelli.schoolendar.database.Event;
 import com.gabrielezanelli.schoolendar.fragments.EventFragment;
 
 import org.apache.commons.lang.WordUtils;
@@ -26,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
-    private final List<Event> allEvents;
+    private final List<Event> events;
     private String filter = "";
 
-    public EventAdapter(List<Event> allEvents) {
-        this.allEvents = new ArrayList<>(allEvents);
+    public EventAdapter(List<Event> events) {
+        this.events = new ArrayList<>(events);
     }
 
     // When the View Holder is created inflates the layout
@@ -42,13 +44,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
     // When the View Holder get scrolled or updated, updates the view holder's content
     @Override
-    public void onBindViewHolder(EventHolder eventHolder, int position) {
-        eventHolder.update(allEvents.get(position), filter);
+    public void onBindViewHolder(EventHolder holder, int position) {
+        holder.updateView(events.get(position), filter);
     }
 
     @Override
     public int getItemCount() {
-        return allEvents.size();
+        return events.size();
     }
 
     public void updateEventList(List<Event> events, String filter) {
@@ -63,8 +65,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     }
 
     private void applyAndAnimateRemovals(List<Event> newEvents) {
-        for (int i = allEvents.size() - 1; i >= 0; i--) {
-            final Event event = allEvents.get(i);
+        for (int i = events.size() - 1; i >= 0; i--) {
+            final Event event = events.get(i);
             if (!newEvents.contains(event)) {
                 removeItem(i);
             }
@@ -74,7 +76,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     private void applyAndAnimateAdditions(List<Event> newEvents) {
         for (int i = 0, count = newEvents.size(); i < count; i++) {
             final Event event = newEvents.get(i);
-            if (!allEvents.contains(event)) {
+            if (!events.contains(event)) {
                 addItem(i, event);
             }
         }
@@ -83,7 +85,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     private void applyAndAnimateMovedItems(List<Event> newEvents) {
         for (int toPosition = newEvents.size() - 1; toPosition >= 0; toPosition--) {
             final Event event = newEvents.get(toPosition);
-            final int fromPosition = allEvents.indexOf(event);
+            final int fromPosition = events.indexOf(event);
             if (fromPosition >= 0 && fromPosition != toPosition) {
                 moveItem(fromPosition, toPosition);
             }
@@ -91,24 +93,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     }
 
     public Event removeItem(int position) {
-        final Event event = allEvents.remove(position);
+        final Event event = events.remove(position);
         notifyItemRemoved(position);
         return event;
     }
 
     public void addItem(int position, Event event) {
-        allEvents.add(position, event);
+        events.add(position, event);
         notifyItemInserted(position);
     }
 
     public void moveItem(int fromPosition, int toPosition) {
-        final Event event = allEvents.remove(fromPosition);
-        allEvents.add(toPosition, event);
+        final Event event = events.remove(fromPosition);
+        events.add(toPosition, event);
         notifyItemMoved(fromPosition, toPosition);
     }
 
 
-    static class EventHolder extends RecyclerView.ViewHolder {
+    protected static class EventHolder extends RecyclerView.ViewHolder {
+
+        private Event currentEvent;
 
         private TextView titleText;
         private TextView dateText;
@@ -132,13 +136,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
                     .findDrawableByLayerId(R.id.left_coloured_border);
             
             backgroundHighlight = new BackgroundColorSpan(res.getColor(R.color.yellow));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EventFragment event = new EventFragment();
+                    Bundle extras = new Bundle();
+                    extras.putString(v.getContext().getString(R.string.EXTRA_STRING_EVENT_ID),currentEvent.getId());
+                    event.setArguments(extras);
+                    Log.d("All Events", "Opening event with ID: " + currentEvent.getId());
+                    ((MainActivity) v.getContext()).performFragmentTransaction(event, true);
+                }
+            });
         }
 
-        private void update(final Event updatingEvent, String filter) {
-
+        private void updateView(final Event updatingEvent, String filter) {
+            currentEvent = updatingEvent;
             // Highlight the searched text  {START}
             String newTitle = updatingEvent.getTitle();
-            String newTypeSubject = updatingEvent.chainTypePlusSubject();
+            String newTypeSubject = updatingEvent.chainTypeSubject();
             String newDate = WordUtils.capitalize(new SimpleDateFormat(dateFormat).format(updatingEvent.getDate()));
             int filterLength = filter.length();
 
@@ -184,34 +200,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
             // Highlight the searched text  {START}
 
             // Set the color of the border  {START}
-            Event.eventType type = Event.eventType.valueOf(updatingEvent.getType());
+            Event.EventType type = Event.EventType.valueOf(updatingEvent.getType());
 
-            if(type == Event.eventType.Homework)
+            if(type == Event.EventType.Homework)
                 leftBorder.setColor(res.getColor(R.color.yellow));
-            else if(type == Event.eventType.Test)
+            else if(type == Event.EventType.Test)
                 leftBorder.setColor(res.getColor(R.color.red));
-            else if(type == Event.eventType.Project)
+            else if(type == Event.EventType.Project)
                 leftBorder.setColor(res.getColor(R.color.blue));
-            else if(type == Event.eventType.Communication)
+            else if(type == Event.EventType.Communication)
                 leftBorder.setColor(res.getColor(R.color.green));
-            else if(type == Event.eventType.Note)
+            else if(type == Event.EventType.Note)
                 leftBorder.setColor(res.getColor(R.color.aqua));
-            else if(type == Event.eventType.ClassevivaEvent)
+            else if(type == Event.EventType.ClassevivaEvent)
                 leftBorder.setColor(res.getColor(R.color.orange));
             // Highlight the searched text  {END}
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EventFragment event = new EventFragment();
-                    Bundle extras = new Bundle();
-                    extras.putString(v.getContext().getString(R.string.EXTRA_STRING_EVENT_ID), updatingEvent.getId());
-                    event.setArguments(extras);
-                    Log.d("All Events", "Opening event with ID: " + updatingEvent.getId());
-                    ((MainActivity) v.getContext()).performFragmentTransaction(event, true);
-                }
-            });
-
 
         }
     }

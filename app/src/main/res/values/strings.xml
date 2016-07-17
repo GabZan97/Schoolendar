@@ -66,6 +66,9 @@
     <string name="message_logout_confirm">Are you sure?</string>
     <string name="message_any_notification_set">Any notification set</string>
     <string name="message_edit_subject">Edit subject name</string>
+    <string name="message_delete_subject">Deleting subject</string>
+    <string name="message_delete_subject_confirm">If you delete this subject, all the events that it concerns will be deleted also.
+    Are you sure you want to delete it?</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
 
     <!-- Notifications stuff -->
@@ -112,6 +115,8 @@
     <string name="pref_key_notification_time">default_shared_preferences_key_notification_time</string>
     <string name="pref_notification_time">Default time</string>
     <string name="pref_default_notification_time">54000000</string>
+    <string name="pref_key_event_highlight_color">default_shared_preferences_key_event_highlight_color</string>
+    <string name="pref_event_color">Highlight color for events</string>
 
     <!-- Arrays -->
     <string-array name="event_types">

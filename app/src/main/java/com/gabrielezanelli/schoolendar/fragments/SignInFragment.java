@@ -35,7 +35,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.FirebaseHelper;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
 import com.google.android.gms.auth.api.Auth;
@@ -183,9 +183,9 @@ public class SignInFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void signInWithCredential(final AuthCredential credential) {
 
-        if (FirebaseUser.isAnonymous()) {
-            FirebaseUser.deleteUserAndSaveData();
-            //FirebaseUser.setPreviousUser(FirebaseAuth.getInstance().getCurrentUser());
+        if (FirebaseHelper.isAnonymous()) {
+            FirebaseHelper.deleteUserAndSaveData();
+            //FirebaseHelper.setPreviousUser(FirebaseAuth.getInstance().getCurrentUser());
         }
 
         firebaseAuth.signInWithCredential(credential)

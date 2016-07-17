@@ -14,7 +14,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.gabrielezanelli.schoolendar.FirebaseUser;
+import com.gabrielezanelli.schoolendar.FirebaseHelper;
 import com.gabrielezanelli.schoolendar.R;
 import com.gabrielezanelli.schoolendar.activities.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -64,17 +64,17 @@ public class AccountPreferencesFragment extends PreferenceFragment {
 
         // Set the Current User's information to the shared preferences
         sharedPreferences.edit()
-                .putString(getString(R.string.pref_key_username), FirebaseUser.getUsername())
-                .putString(getString(R.string.pref_key_email), FirebaseUser.getEmail())
+                .putString(getString(R.string.pref_key_username), FirebaseHelper.getUsername())
+                .putString(getString(R.string.pref_key_email), FirebaseHelper.getEmail())
                 .apply();
 
 
         // Set the Fragment Shared Preferences' summary to the current information
-        findPreference(getString(R.string.pref_key_username)).setSummary(FirebaseUser.getUsername());
-        findPreference(getString(R.string.pref_key_email)).setSummary(FirebaseUser.getEmail());
+        findPreference(getString(R.string.pref_key_username)).setSummary(FirebaseHelper.getUsername());
+        findPreference(getString(R.string.pref_key_email)).setSummary(FirebaseHelper.getEmail());
 
         String imageSummary;
-        if(FirebaseUser.getImage()==null)
+        if(FirebaseHelper.getImage()==null)
             imageSummary = getString(R.string.pref_summary_image_unset);
         else
             imageSummary = getString(R.string.pref_summary_image_set);
@@ -113,7 +113,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
 
                     Log.d("Shared Preferences","Username retrieved: "+username);
                     prefLink.setSummary(username);
-                    FirebaseUser.setUsername(username);
+                    FirebaseHelper.setUsername(username);
 
                 }
                  else if (preferenceKey.equals(getString(R.string.pref_key_enable_default_notifications))){
@@ -159,7 +159,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             copyProfileImage(filePath);
 
             // TODO: Upload on cloud and get the url
-            // TODO: Set the url to FirebaseUser image
+            // TODO: Set the url to FirebaseHelper image
 
             findPreference(getString(R.string.pref_key_image)).setSummary(getString(R.string.pref_summary_image_set));
         }
@@ -191,7 +191,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             }
 
             Log.d("Image copy","Succeeded");
-            FirebaseUser.setPhotoUrl(Uri.fromFile(destFile));
+            FirebaseHelper.setPhotoUrl(Uri.fromFile(destFile));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
